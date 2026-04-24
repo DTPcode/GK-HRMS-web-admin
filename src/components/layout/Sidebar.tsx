@@ -81,18 +81,26 @@ export function Sidebar() {
   // RBAC: lấy role hiện tại để filter menu items
   const currentRole = useAccountStore((s) => s.currentUser.role);
 
+  // Hydration guard: server không có localStorage → role khác client → mismatch.
+  // Chờ mount xong mới render nav items đúng role.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   // Đóng mobile sidebar khi chuyển route
   useEffect(() => {
     closeMobile();
   }, [pathname, closeMobile]);
 
   // Filter NAV_ITEMS theo visibleFor của role hiện tại
-  const visibleNavItems = NAV_ITEMS.filter((item) => {
-    // visibleFor = null → hiện cho tất cả roles (Dashboard)
-    if (!item.visibleFor) return true;
-    // Check role có trong danh sách visibleFor
-    return (item.visibleFor as readonly string[]).includes(currentRole);
-  });
+  // SSR: trả mảng rỗng → client mount sẽ render đúng → tránh hydration mismatch
+  const visibleNavItems = mounted
+    ? NAV_ITEMS.filter((item) => {
+        if (!item.visibleFor) return true;
+        return (item.visibleFor as readonly string[]).includes(currentRole);
+      })
+    : [];
 
   // Sidebar content — dùng chung cho desktop và mobile
   const sidebarContent = (
