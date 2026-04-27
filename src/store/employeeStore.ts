@@ -5,15 +5,22 @@
 // ============================================================================
 
 import { create } from "zustand";
+import { API_BASE } from "@/lib/constants";
+import { toast } from "sonner";
 import { guardPermission } from "@/lib/guardPermission";
+import { logAudit } from "@/lib/auditHelper";
 import type {
   Employee,
   EmployeeFormData,
   EmployeeFilter,
   EmployeeStatus,
+  BankAccount,
+  BankAccountFormData,
+  Qualification,
+  QualificationFormData,
 } from "@/types/employee";
 
-const API_BASE = "http://localhost:3001";
+
 
 // ---------------------------------------------------------------------------
 // Stats Interface
@@ -42,6 +49,12 @@ interface EmployeeState {
   filter: EmployeeFilter;
   /** Danh sách ID đang chọn — dùng cho bulk actions (xóa, xuất...) */
   selectedIds: string[];
+
+  /** Danh sách tài khoản ngân hàng — fetch theo employeeId */
+  bankAccounts: BankAccount[];
+
+  /** Danh sách bằng cấp / chứng chỉ — fetch theo employeeId */
+  qualifications: Qualification[];
 
   // ── ACTIONS ──
 
@@ -103,6 +116,37 @@ interface EmployeeState {
 
   /** Bỏ chọn tất cả — set selectedIds = [] */
   clearSelection: () => void;
+
+  // ── BANK ACCOUNT ACTIONS ──
+
+  /** Fetch TK ngân hàng theo nhân viên — GET /bank-accounts?employeeId=X */
+  fetchBankAccounts: (employeeId: string) => Promise<void>;
+
+  /** Thêm TK ngân hàng mới — optimistic update */
+  addBankAccount: (data: BankAccountFormData) => Promise<void>;
+
+  /** Cập nhật TK ngân hàng — PATCH /bank-accounts/:id */
+  updateBankAccount: (id: string, data: Partial<BankAccountFormData>) => Promise<void>;
+
+  /** Xóa TK ngân hàng — DELETE /bank-accounts/:id. Không xóa isPrimary nếu còn TK khác */
+  deleteBankAccount: (id: string) => Promise<void>;
+
+  /** Đặt TK nhận lương chính — unset tất cả TK khác cùng employeeId */
+  setPrimaryAccount: (id: string) => Promise<void>;
+
+  // ── QUALIFICATION ACTIONS ──
+
+  /** Fetch bằng cấp theo nhân viên — GET /qualifications?employeeId=X */
+  fetchQualifications: (employeeId: string) => Promise<void>;
+
+  /** Thêm bằng cấp mới — optimistic update */
+  addQualification: (data: QualificationFormData) => Promise<void>;
+
+  /** Cập nhật bằng cấp — PATCH /qualifications/:id */
+  updateQualification: (id: string, data: Partial<QualificationFormData>) => Promise<void>;
+
+  /** Xóa bằng cấp — DELETE /qualifications/:id */
+  deleteQualification: (id: string) => Promise<void>;
 
   // ── COMPUTED (functions, không phải state) ──
   // Tại sao function không phải state: luôn đúng, không cần sync 2 chỗ.
@@ -180,6 +224,8 @@ export const useEmployeeStore = create<EmployeeState>((set, get) => ({
   error: null,
   filter: { ...DEFAULT_FILTER },
   selectedIds: [],
+  bankAccounts: [],
+  qualifications: [],
 
   // ═══════════════════════════════════════════════════════════════════════════
   // ACTIONS
@@ -226,7 +272,7 @@ export const useEmployeeStore = create<EmployeeState>((set, get) => ({
       // Salary managed via Contract — default placeholder values
       salary: 0,
       salaryType: "monthly",
-      id: `emp-${Date.now()}`,
+      id: crypto.randomUUID(),
       createdAt: now,
       updatedAt: now,
     };
@@ -242,15 +288,20 @@ export const useEmployeeStore = create<EmployeeState>((set, get) => ({
         body: JSON.stringify(newEmployee),
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    } catch (err) {
-      // Rollback — xóa bản vừa thêm
-      set({
-        employees: prevEmployees,
-        error:
-          err instanceof Error
-            ? err.message
-            : "Không thể tạo nhân viên mới. Vui lòng thử lại.",
+
+      toast.success("Đã thêm nhân viên mới");
+
+      // C2: Audit log — fire-and-forget
+      logAudit({
+        module: "employees",
+        action: "create",
+        targetId: newEmployee.id,
+        targetName: newEmployee.name,
       });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Không thể tạo nhân viên mới. Vui lòng thử lại.";
+      set({ employees: prevEmployees, error: msg });
+      toast.error(msg);
     }
   },
 
@@ -277,15 +328,32 @@ export const useEmployeeStore = create<EmployeeState>((set, get) => ({
         body: JSON.stringify(patchData),
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    } catch (err) {
-      // Rollback về bản cũ
-      set({
-        employees: prevEmployees,
-        error:
-          err instanceof Error
-            ? err.message
-            : "Không thể cập nhật nhân viên. Vui lòng thử lại.",
+
+      toast.success("Đã cập nhật thông tin");
+
+      // C2: Audit log — fire-and-forget
+      const emp = prevEmployees.find((e) => e.id === id);
+      const changes: Record<string, { before: unknown; after: unknown }> = {};
+      if (emp) {
+        for (const key of Object.keys(data) as (keyof typeof data)[]) {
+          const before = emp[key as keyof Employee];
+          const after = data[key];
+          if (before !== after) {
+            changes[key] = { before, after };
+          }
+        }
+      }
+      logAudit({
+        module: "employees",
+        action: "update",
+        targetId: id,
+        targetName: emp?.name ?? id,
+        changes: Object.keys(changes).length > 0 ? changes : null,
       });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Không thể cập nhật nhân viên. Vui lòng thử lại.";
+      set({ employees: prevEmployees, error: msg });
+      toast.error(msg);
     }
   },
 
@@ -307,16 +375,21 @@ export const useEmployeeStore = create<EmployeeState>((set, get) => ({
         method: "DELETE",
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    } catch (err) {
-      // Rollback — thêm lại NV đã xóa
-      set({
-        employees: prevEmployees,
-        selectedIds: prevSelectedIds,
-        error:
-          err instanceof Error
-            ? err.message
-            : "Không thể xóa nhân viên. Vui lòng thử lại.",
+
+      toast.success("Đã xóa nhân viên");
+
+      // C2: Audit log — fire-and-forget
+      const emp = prevEmployees.find((e) => e.id === id);
+      logAudit({
+        module: "employees",
+        action: "delete",
+        targetId: id,
+        targetName: emp?.name ?? id,
       });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Không thể xóa nhân viên. Vui lòng thử lại.";
+      set({ employees: prevEmployees, selectedIds: prevSelectedIds, error: msg });
+      toast.error(msg);
     }
   },
 
@@ -351,6 +424,245 @@ export const useEmployeeStore = create<EmployeeState>((set, get) => ({
 
   clearSelection: () => {
     set({ selectedIds: [] });
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // BANK ACCOUNT ACTIONS
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  fetchBankAccounts: async (employeeId) => {
+    try {
+      const res = await fetch(`${API_BASE}/bank-accounts?employeeId=${employeeId}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data: BankAccount[] = await res.json();
+      set({ bankAccounts: data });
+    } catch {
+      set({ bankAccounts: [] });
+    }
+  },
+
+  addBankAccount: async (data) => {
+    if (!guardPermission("employees", "create", (msg) => set({ error: msg }))) return;
+
+    const now = nowISO();
+    const newAccount: BankAccount = {
+      ...data,
+      accountHolder: data.accountHolder.toUpperCase(),
+      id: crypto.randomUUID(),
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    // If first account or marked primary, ensure exclusivity
+    const prev = get().bankAccounts;
+    const isFirst = prev.filter((a) => a.employeeId === data.employeeId).length === 0;
+    if (isFirst) newAccount.isPrimary = true;
+
+    // Optimistic
+    let updatedList = [...prev];
+    if (newAccount.isPrimary) {
+      updatedList = updatedList.map((a) =>
+        a.employeeId === data.employeeId ? { ...a, isPrimary: false } : a
+      );
+    }
+    updatedList.push(newAccount);
+    set({ bankAccounts: updatedList, error: null });
+
+    try {
+      // If setting primary, unset others on server
+      if (newAccount.isPrimary) {
+        for (const a of prev.filter((a) => a.employeeId === data.employeeId && a.isPrimary)) {
+          await fetch(`${API_BASE}/bank-accounts/${a.id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ isPrimary: false, updatedAt: now }),
+          });
+        }
+      }
+
+      const res = await fetch(`${API_BASE}/bank-accounts`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newAccount),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    } catch {
+      // Rollback
+      set({ bankAccounts: prev, error: "Không thể thêm tài khoản ngân hàng. Vui lòng thử lại." });
+    }
+  },
+
+  updateBankAccount: async (id, data) => {
+    if (!guardPermission("employees", "update", (msg) => set({ error: msg }))) return;
+
+    const prev = get().bankAccounts;
+    const now = nowISO();
+    const patchData = {
+      ...data,
+      ...(data.accountHolder ? { accountHolder: data.accountHolder.toUpperCase() } : {}),
+      updatedAt: now,
+    };
+
+    set({
+      bankAccounts: prev.map((a) => (a.id === id ? { ...a, ...patchData } : a)),
+      error: null,
+    });
+
+    try {
+      const res = await fetch(`${API_BASE}/bank-accounts/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(patchData),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    } catch {
+      set({ bankAccounts: prev, error: "Không thể cập nhật tài khoản. Vui lòng thử lại." });
+    }
+  },
+
+  deleteBankAccount: async (id) => {
+    if (!guardPermission("employees", "delete", (msg) => set({ error: msg }))) return;
+
+    const prev = get().bankAccounts;
+    const target = prev.find((a) => a.id === id);
+    if (!target) return;
+
+    // Không xóa isPrimary nếu còn TK khác
+    const sameEmployee = prev.filter((a) => a.employeeId === target.employeeId);
+    if (target.isPrimary && sameEmployee.length > 1) {
+      set({ error: "Vui lòng đặt tài khoản khác làm mặc định trước khi xóa" });
+      return;
+    }
+
+    // Optimistic
+    set({ bankAccounts: prev.filter((a) => a.id !== id), error: null });
+
+    try {
+      const res = await fetch(`${API_BASE}/bank-accounts/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    } catch {
+      set({ bankAccounts: prev, error: "Không thể xóa tài khoản. Vui lòng thử lại." });
+    }
+  },
+
+  setPrimaryAccount: async (id) => {
+    if (!guardPermission("employees", "update", (msg) => set({ error: msg }))) return;
+
+    const prev = get().bankAccounts;
+    const target = prev.find((a) => a.id === id);
+    if (!target || target.isPrimary) return;
+
+    const now = nowISO();
+
+    // Optimistic: unset all same employee, set target
+    set({
+      bankAccounts: prev.map((a) => {
+        if (a.employeeId !== target.employeeId) return a;
+        return a.id === id
+          ? { ...a, isPrimary: true, updatedAt: now }
+          : { ...a, isPrimary: false, updatedAt: now };
+      }),
+      error: null,
+    });
+
+    try {
+      // Unset others
+      const others = prev.filter((a) => a.employeeId === target.employeeId && a.id !== id && a.isPrimary);
+      for (const a of others) {
+        await fetch(`${API_BASE}/bank-accounts/${a.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ isPrimary: false, updatedAt: now }),
+        });
+      }
+      // Set target
+      await fetch(`${API_BASE}/bank-accounts/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isPrimary: true, updatedAt: now }),
+      });
+    } catch {
+      set({ bankAccounts: prev, error: "Không thể cập nhật tài khoản mặc định. Vui lòng thử lại." });
+    }
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // QUALIFICATION ACTIONS
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  fetchQualifications: async (employeeId) => {
+    try {
+      const res = await fetch(`${API_BASE}/qualifications?employeeId=${employeeId}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data: Qualification[] = await res.json();
+      set({ qualifications: data });
+    } catch {
+      set({ qualifications: [] });
+    }
+  },
+
+  addQualification: async (data) => {
+    if (!guardPermission("employees", "create", (msg) => set({ error: msg }))) return;
+
+    const now = nowISO();
+    const newQual: Qualification = {
+      ...data,
+      id: crypto.randomUUID(),
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    const prev = get().qualifications;
+    set({ qualifications: [...prev, newQual], error: null });
+
+    try {
+      const res = await fetch(`${API_BASE}/qualifications`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newQual),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    } catch {
+      set({ qualifications: prev, error: "Không thể thêm bằng cấp. Vui lòng thử lại." });
+    }
+  },
+
+  updateQualification: async (id, data) => {
+    if (!guardPermission("employees", "update", (msg) => set({ error: msg }))) return;
+
+    const prev = get().qualifications;
+    const now = nowISO();
+    const patchData = { ...data, updatedAt: now };
+
+    set({
+      qualifications: prev.map((q) => (q.id === id ? { ...q, ...patchData } : q)),
+      error: null,
+    });
+
+    try {
+      const res = await fetch(`${API_BASE}/qualifications/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(patchData),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    } catch {
+      set({ qualifications: prev, error: "Không thể cập nhật bằng cấp. Vui lòng thử lại." });
+    }
+  },
+
+  deleteQualification: async (id) => {
+    if (!guardPermission("employees", "delete", (msg) => set({ error: msg }))) return;
+
+    const prev = get().qualifications;
+    set({ qualifications: prev.filter((q) => q.id !== id), error: null });
+
+    try {
+      const res = await fetch(`${API_BASE}/qualifications/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    } catch {
+      set({ qualifications: prev, error: "Không thể xóa bằng cấp. Vui lòng thử lại." });
+    }
   },
 
   // ═══════════════════════════════════════════════════════════════════════════

@@ -5,6 +5,7 @@
 // ============================================================================
 
 import { create } from "zustand";
+import { API_BASE } from "@/lib/constants";
 import { guardPermission } from "@/lib/guardPermission";
 import type {
   UserAccount,
@@ -16,8 +17,9 @@ import type {
   AuditLog,
 } from "@/types/account";
 import { ROLE_PERMISSIONS } from "@/types/account";
+import { getCurrentMockUser } from "@/lib/mockAuth";
 
-const API_BASE = "http://localhost:3001";
+
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -52,7 +54,6 @@ const FALLBACK_USER: UserAccount = {
 function getInitialUser(): UserAccount {
   if (typeof window === "undefined") return FALLBACK_USER;
   try {
-    const { getCurrentMockUser } = require("@/lib/mockAuth");
     return getCurrentMockUser();
   } catch {
     return FALLBACK_USER;
@@ -112,6 +113,7 @@ interface AccountState {
 
   /** Backward-compat alias cho toggleActive */
   toggleAccountStatus: (id: string) => Promise<void>;
+
 
   /**
    * Xóa tài khoản — optimistic update.
@@ -197,7 +199,7 @@ export const useAccountStore = create<AccountState>((set, get) => ({
     const now = nowISO();
     const newAccount: UserAccount = {
       ...data,
-      id: `acc-${Date.now()}`,
+      id: crypto.randomUUID(),
       lastLoginAt: null,
       createdAt: now,
       updatedAt: now,
@@ -213,6 +215,21 @@ export const useAccountStore = create<AccountState>((set, get) => ({
         body: JSON.stringify(newAccount),
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      // Audit log — fire-and-forget
+      const { currentUser } = get();
+      import("@/store/supplementStore").then(({ useSupplementStore }) => {
+        useSupplementStore.getState().logAction({
+          userId: currentUser.id,
+          userName: currentUser.username,
+          action: "create",
+          module: "accounts",
+          targetId: newAccount.id,
+          targetName: newAccount.username,
+          changes: null,
+          ipAddress: "mock-ip",
+        });
+      });
     } catch (err) {
       set({
         accounts: prev,
@@ -271,6 +288,22 @@ export const useAccountStore = create<AccountState>((set, get) => ({
         body: JSON.stringify(patchData),
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      // Audit log — fire-and-forget
+      const { currentUser } = get();
+      const target = prev.find((a) => a.id === id);
+      import("@/store/supplementStore").then(({ useSupplementStore }) => {
+        useSupplementStore.getState().logAction({
+          userId: currentUser.id,
+          userName: currentUser.username,
+          action: "update",
+          module: "accounts",
+          targetId: id,
+          targetName: target?.username ?? id,
+          changes: { role: { before: target?.role, after: role } },
+          ipAddress: "mock-ip",
+        });
+      });
     } catch (err) {
       set({
         accounts: prev,
@@ -303,6 +336,21 @@ export const useAccountStore = create<AccountState>((set, get) => ({
         body: JSON.stringify(patchData),
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      // Audit log — fire-and-forget
+      const { currentUser } = get();
+      import("@/store/supplementStore").then(({ useSupplementStore }) => {
+        useSupplementStore.getState().logAction({
+          userId: currentUser.id,
+          userName: currentUser.username,
+          action: "update",
+          module: "accounts",
+          targetId: id,
+          targetName: account.username,
+          changes: { isActive: { before: account.isActive, after: !account.isActive } },
+          ipAddress: "mock-ip",
+        });
+      });
     } catch (err) {
       set({
         accounts: prev,
@@ -388,7 +436,7 @@ export const useAccountStore = create<AccountState>((set, get) => ({
 
   hasPermission: (module, action) => {
     const { currentUser } = get();
-    if (!currentUser) return false;
+    // currentUser luôn có giá trị (khởi tạo từ getInitialUser/FALLBACK_USER)
 
     // 1. Check role default permissions
     const rolePerms = ROLE_PERMISSIONS[currentUser.role] ?? [];

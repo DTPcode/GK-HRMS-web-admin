@@ -23,6 +23,8 @@ const MODULES: Module[] = [
   "contracts",
   "attendance",
   "payroll",
+  "rewards",
+  "insurance",
   "accounts",
   "reports",
 ];
@@ -32,6 +34,8 @@ const MODULE_LABELS: Record<Module, string> = {
   contracts: "Hợp đồng",
   attendance: "Chấm công",
   payroll: "Bảng lương",
+  rewards: "Khen thưởng & KL",
+  insurance: "Bảo hiểm",
   accounts: "Tài khoản",
   reports: "Báo cáo",
 };

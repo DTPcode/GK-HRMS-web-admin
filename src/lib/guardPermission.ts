@@ -6,6 +6,7 @@
 // ============================================================================
 
 import type { Module, Action } from "@/types/account";
+import { useAccountStore } from "@/store/accountStore";
 
 /**
  * Kiểm tra quyền hiện tại và trả về true/false.
@@ -25,12 +26,15 @@ export function guardPermission(
   action: Action,
   setError: (message: string) => void
 ): boolean {
-  // Dynamic import tránh circular dependency
-  // accountStore là source-of-truth cho currentUser + hasPermission
-  const { useAccountStore } = require("@/store/accountStore");
-  const { hasPermission } = useAccountStore.getState();
+  const store = useAccountStore.getState();
+  const { currentUser } = store;
 
-  if (!hasPermission(module, action)) {
+  if (!currentUser) {
+    setError("Bạn chưa đăng nhập. Vui lòng đăng nhập lại.");
+    return false;
+  }
+
+  if (!store.hasPermission(module, action)) {
     const ACTION_LABELS: Record<string, string> = {
       view: "xem",
       create: "tạo mới",

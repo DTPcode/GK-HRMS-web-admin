@@ -19,7 +19,7 @@ export const userRoleSchema = z.enum(
 
 /** 6 module chức năng trong hệ thống */
 export const moduleSchema = z.enum(
-  ["employees", "contracts", "attendance", "payroll", "accounts", "reports"],
+  ["employees", "contracts", "attendance", "payroll", "accounts", "reports", "rewards", "insurance"],
   { error: "Module là bắt buộc" }
 );
 
@@ -209,60 +209,90 @@ const VIEW_ONLY: Action[] = ["view"];
 
 /** Tất cả modules */
 const ALL_MODULES: Module[] = [
-  "employees", "contracts", "attendance", "payroll", "accounts", "reports",
+  "employees", "contracts", "attendance", "payroll", "accounts", "reports", "rewards", "insurance",
 ];
 
 /**
  * Default permissions cho mỗi role.
  * Dùng trong: usePermission hook, AccountForm, RolePermissionMatrix.
  *
- * Hierarchy:
- *   super_admin    → God mode: tất cả modules × tất cả actions
- *   hr_admin       → Full CRUD employees/contracts/attendance/reports, payroll (view+create), accounts (view)
- *   branch_manager → attendance (full, branch scope), employees (view), payroll (view)
- *   accountant     → payroll (full), attendance (view), reports (view+export)
- *   director       → Tất cả modules chỉ view + approve, reports (full)
- *   director        → Xem + duyệt tất cả modules, toàn quyền báo cáo
+ * Hierarchy theo SRS Lẩu Nấm Gia Khánh:
+ *
+ *   super_admin (Quản trị viên hệ thống)
+ *     → Toàn quyền: tất cả modules × tất cả actions.
+ *       Quản lý tài khoản, vai trò, audit log, khóa kỳ dữ liệu.
+ *
+ *   hr_admin (Nhân viên Phòng Nhân sự)
+ *     → Full CRUD employees, contracts, attendance (toàn chuỗi 8 CN).
+ *       Approve: điều chuyển, nghỉ việc, bảng công.
+ *       Payroll: view + create (tạo bảng công tháng, KHÔNG duyệt lương).
+ *       Reports: view + export.
+ *       Accounts: view only.
+ *
+ *   branch_manager (Quản lý Chi nhánh)
+ *     → Scope: chỉ NV thuộc chi nhánh mình (Local View).
+ *       Attendance: full CRUD + approve (phân ca, duyệt đơn, xác nhận bảng công).
+ *       Employees: view + đề xuất (approve sơ bộ điều chuyển, nghỉ việc).
+ *       Contracts: view only (xem HĐ NV tại CN).
+ *       Payroll: view + approve (xác nhận bảng công tháng mà HR tổng hợp).
+ *
+ *   accountant (Kế toán)
+ *     → Payroll: toàn quyền (tạo bảng lương, tính thuế, chi trả, export file NH).
+ *       Employees: view (xem thông tin NH, MST để chi lương).
+ *       Attendance: view (đối chiếu ngày công).
+ *       Reports: view + export.
+ *
+ *   director (Ban Giám đốc)
+ *     → Global View — giám sát toàn bộ, chỉ xem + duyệt.
+ *       Phê duyệt cuối cùng: bảng lương toàn chuỗi, nghỉ việc quan trọng.
+ *       Reports: view + approve + export.
+ *       KHÔNG tạo / xóa / sửa dữ liệu trực tiếp.
  */
 export const ROLE_PERMISSIONS: RolePermissionMap = {
-  // --- Super Admin: toàn quyền ---
+  // ─── Super Admin: toàn quyền tất cả modules ────────────────────────
   super_admin: ALL_MODULES.map((module) => ({
     module,
     actions: ALL_ACTIONS,
   })),
 
-  // --- HR Admin: quản lý nhân sự toàn diện, lương hạn chế ---
+  // ─── HR Admin: quản lý nhân sự toàn diện, scope toàn chuỗi ────────
   hr_admin: [
-    { module: "employees",  actions: ["view", "create", "update", "delete", "export"] },
+    { module: "employees",  actions: ["view", "create", "update", "delete", "approve", "export"] },
     { module: "contracts",  actions: ["view", "create", "update", "delete", "export"] },
     { module: "attendance", actions: ["view", "create", "update", "approve", "export"] },
     { module: "payroll",    actions: ["view", "create"] },
     { module: "accounts",   actions: ["view"] },
-    { module: "reports",    actions: ["view", "create", "update", "delete", "export"] },
-  ],
-
-  // --- Branch Manager: quản lý chấm công chi nhánh, xem NV & lương ---
-  branch_manager: [
-    { module: "employees",  actions: ["view"] },
-    { module: "attendance", actions: ["view", "create", "update", "delete", "approve"] },
-    { module: "payroll",    actions: ["view"] },
-  ],
-
-  // --- Accountant (Kế toán): quản lý lương + xem chấm công & báo cáo ---
-  accountant: [
-    { module: "payroll",    actions: ["view", "create", "update", "delete", "approve", "export"] },
-    { module: "attendance", actions: ["view"] },
     { module: "reports",    actions: ["view", "export"] },
+    { module: "rewards",    actions: ["view", "create", "update", "delete"] },
+    { module: "insurance",  actions: ["view", "create", "update", "delete"] },
   ],
 
-  // --- Director (Ban Giám đốc): xem + duyệt tất cả, toàn quyền báo cáo ---
+  // ─── Branch Manager: quản lý chi nhánh, scope local ────────────────
+  branch_manager: [
+    { module: "employees",  actions: ["view", "approve"] },
+    { module: "contracts",  actions: ["view"] },
+    { module: "attendance", actions: ["view", "create", "update", "delete", "approve"] },
+    { module: "payroll",    actions: ["view", "approve"] },
+    { module: "rewards",    actions: ["view"] },
+  ],
+
+  // ─── Accountant: tài chính & lương ─────────────────────────────────
+  accountant: [
+    { module: "employees",  actions: ["view"] },
+    { module: "attendance", actions: ["view"] },
+    { module: "payroll",    actions: ["view", "create", "update", "delete", "approve", "export"] },
+    { module: "reports",    actions: ["view", "export"] },
+    { module: "insurance",  actions: ["view"] },
+  ],
+
+  // ─── Director: giám sát toàn bộ, xem + duyệt, KHÔNG sửa/xóa ──────
   director: [
     { module: "employees",  actions: ["view", "approve"] },
     { module: "contracts",  actions: ["view", "approve"] },
     { module: "attendance", actions: ["view", "approve"] },
     { module: "payroll",    actions: ["view", "approve"] },
-    { module: "accounts",   actions: ["view", "approve"] },
-    { module: "reports",    actions: ["view", "create", "update", "delete", "approve", "export"] },
+    { module: "accounts",   actions: ["view"] },
+    { module: "reports",    actions: ["view", "approve", "export"] },
   ],
 };
 
@@ -277,26 +307,26 @@ export const ROLE_CONFIG: Record<
   super_admin: {
     label_vi: "Quản trị viên",
     badgeColor: "bg-red-100 text-red-700 border-red-200",
-    description: "Toàn quyền hệ thống",
+    description: "Toàn quyền hệ thống: tài khoản, vai trò, audit log, cấu hình",
   },
   hr_admin: {
     label_vi: "Quản lý nhân sự",
     badgeColor: "bg-purple-100 text-purple-700 border-purple-200",
-    description: "Quản lý NV, hợp đồng, chấm công, báo cáo",
+    description: "CRUD NV, hợp đồng, chấm công toàn chuỗi. Duyệt điều chuyển, nghỉ việc",
   },
   branch_manager: {
     label_vi: "Quản lý chi nhánh",
     badgeColor: "bg-blue-100 text-blue-700 border-blue-200",
-    description: "Quản lý chấm công chi nhánh",
+    description: "Phân ca, duyệt đơn, xác nhận bảng công tại chi nhánh",
   },
   accountant: {
     label_vi: "Kế toán",
     badgeColor: "bg-emerald-100 text-emerald-700 border-emerald-200",
-    description: "Quản lý bảng lương, xem chấm công",
+    description: "Tính lương, thuế, chi trả, export file ngân hàng",
   },
   director: {
     label_vi: "Ban Giám đốc",
     badgeColor: "bg-amber-100 text-amber-700 border-amber-200",
-    description: "Xem và duyệt tất cả, toàn quyền báo cáo",
+    description: "Giám sát toàn bộ, duyệt cuối cùng bảng lương & nghỉ việc",
   },
 };

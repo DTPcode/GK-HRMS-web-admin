@@ -33,6 +33,7 @@ import { DataExportButton } from "@/components/shared/DataExportButton";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { ErrorMessage } from "@/components/shared/ErrorMessage";
 import { TableSkeleton } from "@/components/shared/TableSkeleton";
+import { LockBadge } from "@/components/shared/LockBadge";
 import { usePayrollStore } from "@/store/payrollStore";
 import { useEmployeeStore } from "@/store/employeeStore";
 import { useContractStore } from "@/store/contractStore";
@@ -184,8 +185,8 @@ export function PayrollPageClient() {
     (r) => r.status === "approved" || r.status === "paid"
   );
 
-  // ── Summary ──
-  const summary = payrollSummary();
+  // ── Summary (L2: memoized) ──
+  const summary = useMemo(() => payrollSummary(), [records, selectedMonth]);
 
   // ── Current workflow step (highest status in month) ──
   const currentStep = useMemo(() => {
@@ -337,6 +338,7 @@ export function PayrollPageClient() {
         <Button variant="outline" size="sm" onClick={handleNextMonth} className="h-8 w-8 p-0" aria-label="Tháng sau">
           <ChevronRight className="h-4 w-4" />
         </Button>
+        <LockBadge type="payroll_period" period={selectedMonth} />
       </div>
 
       {/* ── Workflow Stepper (filter buttons) + Bulk Action ── */}

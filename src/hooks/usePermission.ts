@@ -29,9 +29,10 @@ const MODULE_ALIAS: Record<string, Module> = {
 /**
  * Kiểm tra user hiện tại có quyền thực hiện action trên module không.
  *
- * Tại sao dùng accountStore thay vì getCurrentMockUser():
- *   - accountStore.currentUser là reactive → khi switchRole() thì UI re-render
- *   - getCurrentMockUser() đọc localStorage trực tiếp → không trigger re-render
+ * Tại sao subscribe role + branchId thay vì hasPermission function:
+ *   - hasPermission là function reference → thay đổi mỗi render → infinite re-render
+ *   - Subscribe primitive values (role, branchId) → chỉ re-render khi thực sự thay đổi
+ *   - Gọi hasPermission qua getState() → không subscribe, chỉ read-once
  *
  * @param module - Tên module: "employee" | "contract" | "attendance" | "payroll" | "account" | "report"
  * @param action - Hành động: "view" | "create" | "update" | "delete" | "approve" | "export"
@@ -42,11 +43,14 @@ const MODULE_ALIAS: Record<string, Module> = {
  * if (!canCreate) return <p>Bạn không có quyền tạo nhân viên</p>;
  */
 export function usePermission(module: string, action: string): boolean {
-  // Dùng selector → chỉ re-render khi hasPermission ref thay đổi
-  const hasPermission = useAccountStore((s) => s.hasPermission);
+  // Subscribe primitive values → re-render chỉ khi role/branchId thay đổi
+  const role = useAccountStore((s) => s.currentUser?.role);
+  const permissions = useAccountStore((s) => s.currentUser?.permissions);
 
   // Normalize: "employee" → "employees"
   const normalizedModule = MODULE_ALIAS[module] ?? (module as Module);
 
-  return hasPermission(normalizedModule, action as Action);
+  // Dùng getState() để gọi hasPermission mà không subscribe function reference
+  return useAccountStore.getState().hasPermission(normalizedModule, action as Action);
 }
+

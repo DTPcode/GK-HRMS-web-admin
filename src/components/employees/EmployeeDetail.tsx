@@ -2,19 +2,26 @@
 
 // ============================================================================
 // GK-HRMS — EmployeeDetail
-// Chi tiết nhân viên: info card + tabs (hợp đồng, chấm công, lương)
+// Chi tiết nhân viên: info card + tabs (TK ngân hàng, bằng cấp, hợp đồng,
+//   chấm công, lương, khen thưởng & kỷ luật, bảo hiểm)
 // ============================================================================
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Pencil, Mail, Phone, MapPin, Calendar } from "lucide-react";
+import { ArrowLeft, Pencil, Mail, Phone, Calendar, Award, ShieldCheck, CreditCard, GraduationCap, FileText, Clock, DollarSign } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BreadCrumb } from "@/components/layout/BreadCrumb";
 import { TableSkeleton } from "@/components/shared/TableSkeleton";
 import { ErrorMessage } from "@/components/shared/ErrorMessage";
 import { useEmployeeStore } from "@/store/employeeStore";
+import { BankAccountPanel } from "@/components/employees/BankAccountPanel";
+import { QualificationPanel } from "@/components/employees/QualificationPanel";
+import { ContractPanel } from "@/components/employees/ContractPanel";
+import { AttendancePanel } from "@/components/employees/AttendancePanel";
+import { PayrollPanel } from "@/components/employees/PayrollPanel";
+import { RewardDisciplinePanel } from "@/components/employees/RewardDisciplinePanel";
+import { InsurancePanel } from "@/components/employees/InsurancePanel";
 import { usePermission } from "@/hooks/usePermission";
 import {
   formatDate,
@@ -101,9 +108,8 @@ export function EmployeeDetail({ employeeId }: EmployeeDetailProps) {
             <div className="flex items-center gap-3">
               <h2 className="text-xl font-bold text-slate-800">{emp.name}</h2>
               <span
-                className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                  EMPLOYEE_STATUS_COLORS[emp.status] ?? ""
-                }`}
+                className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${EMPLOYEE_STATUS_COLORS[emp.status] ?? ""
+                  }`}
               >
                 {EMPLOYEE_STATUS_LABELS[emp.status] ?? emp.status}
               </span>
@@ -163,26 +169,68 @@ export function EmployeeDetail({ employeeId }: EmployeeDetailProps) {
       {/* Tabs */}
       <Tabs defaultValue="contracts">
         <TabsList>
-          <TabsTrigger value="contracts">Hợp đồng</TabsTrigger>
-          <TabsTrigger value="attendance">Chấm công</TabsTrigger>
-          <TabsTrigger value="payroll">Lương</TabsTrigger>
+          <TabsTrigger value="bank" className="gap-1.5">
+            <CreditCard className="h-4 w-4" />
+            Tài khoản NH
+          </TabsTrigger>
+          <TabsTrigger value="qualifications" className="gap-1.5">
+            <GraduationCap className="h-4 w-4" />
+            Bằng cấp
+          </TabsTrigger>
+          <TabsTrigger value="contracts" className="gap-1.5">
+            <FileText className="h-4 w-4" />
+            Hợp đồng
+          </TabsTrigger>
+          <TabsTrigger value="attendance" className="gap-1.5">
+            <Clock className="h-4 w-4" />
+            Chấm công
+          </TabsTrigger>
+          <TabsTrigger value="payroll" className="gap-1.5">
+            <DollarSign className="h-4 w-4" />
+            Lương
+          </TabsTrigger>
+          <TabsTrigger value="rewards" className="gap-1.5">
+            <Award className="h-4 w-4" />
+            Khen thưởng & Kỷ luật
+          </TabsTrigger>
+          <TabsTrigger value="insurance" className="gap-1.5">
+            <ShieldCheck className="h-4 w-4" />
+            Bảo hiểm
+          </TabsTrigger>
         </TabsList>
+        <TabsContent value="bank" className="mt-4">
+          <div className="rounded-xl border border-slate-200 bg-white p-6">
+            <BankAccountPanel employeeId={emp.id} employeeName={emp.name} />
+          </div>
+        </TabsContent>
+        <TabsContent value="qualifications" className="mt-4">
+          <div className="rounded-xl border border-slate-200 bg-white p-6">
+            <QualificationPanel employeeId={emp.id} />
+          </div>
+        </TabsContent>
         <TabsContent value="contracts" className="mt-4">
-          {/* TODO: ContractTable filtered by employeeId */}
-          <div className="rounded-xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-400">
-            TODO: Danh sách hợp đồng của nhân viên
+          <div className="rounded-xl border border-slate-200 bg-white p-6">
+            <ContractPanel employeeId={emp.id} />
           </div>
         </TabsContent>
         <TabsContent value="attendance" className="mt-4">
-          {/* TODO: AttendanceTable filtered by employeeId */}
-          <div className="rounded-xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-400">
-            TODO: Lịch sử chấm công
+          <div className="rounded-xl border border-slate-200 bg-white p-6">
+            <AttendancePanel employeeId={emp.id} />
           </div>
         </TabsContent>
         <TabsContent value="payroll" className="mt-4">
-          {/* TODO: PayrollTable filtered by employeeId */}
-          <div className="rounded-xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-400">
-            TODO: Lịch sử lương
+          <div className="rounded-xl border border-slate-200 bg-white p-6">
+            <PayrollPanel employeeId={emp.id} />
+          </div>
+        </TabsContent>
+        <TabsContent value="rewards" className="mt-4">
+          <div className="rounded-xl border border-slate-200 bg-white p-6">
+            <RewardDisciplinePanel employeeId={emp.id} />
+          </div>
+        </TabsContent>
+        <TabsContent value="insurance" className="mt-4">
+          <div className="rounded-xl border border-slate-200 bg-white p-6">
+            <InsurancePanel employeeId={emp.id} />
           </div>
         </TabsContent>
       </Tabs>

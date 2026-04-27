@@ -1,4 +1,68 @@
 {
+  "bank-accounts": [
+    {
+      "id": "ba-001",
+      "employeeId": "emp-001",
+      "bankName": "Vietcombank",
+      "accountNumber": "1234567890",
+      "accountHolder": "NGUYEN VAN AN",
+      "branch": "Chi nhánh TP.HCM",
+      "isPrimary": true,
+      "createdAt": "2023-06-01T09:00:00Z",
+      "updatedAt": "2023-06-01T09:00:00Z"
+    }
+  ],
+  "qualifications": [
+    {
+      "id": "qual-001",
+      "employeeId": "emp-001",
+      "type": "degree",
+      "name": "Cử nhân Quản trị Kinh doanh",
+      "issuedBy": "Đại học Kinh tế TP.HCM",
+      "issuedDate": "2020-06-15",
+      "expiryDate": null,
+      "documentUrl": "",
+      "createdAt": "2023-06-01T09:00:00Z",
+      "updatedAt": "2023-06-01T09:00:00Z"
+    },
+    {
+      "id": "qual-002",
+      "employeeId": "emp-001",
+      "type": "certificate",
+      "name": "Chứng chỉ An toàn Thực phẩm",
+      "issuedBy": "Sở Y tế TP.HCM",
+      "issuedDate": "2023-03-10",
+      "expiryDate": "2026-03-10",
+      "documentUrl": "",
+      "createdAt": "2023-06-01T09:00:00Z",
+      "updatedAt": "2023-06-01T09:00:00Z"
+    }
+  ],
+  "shift-assignments": [
+    {
+      "id": "sa-001",
+      "employeeId": "emp-001",
+      "branchId": "branch-01",
+      "date": "2026-04-14",
+      "shiftType": "morning",
+      "assignedBy": "admin1",
+      "note": "",
+      "createdAt": "2026-04-10T09:00:00Z",
+      "updatedAt": "2026-04-10T09:00:00Z"
+    },
+    {
+      "id": "sa-002",
+      "employeeId": "emp-002",
+      "branchId": "branch-01",
+      "date": "2026-04-14",
+      "shiftType": "split",
+      "assignedBy": "admin1",
+      "note": "",
+      "createdAt": "2026-04-10T09:00:00Z",
+      "updatedAt": "2026-04-10T09:00:00Z"
+    }
+  ],
+  "monthly-summaries": [],
   "employees": [
     {
       "id": "emp-001",
@@ -8,14 +72,14 @@
       "nationalId": "079201001234",
       "department": "Phục vụ",
       "position": "Trưởng ca phục vụ",
-      "branchId": "branch-001",
+      "branchId": "branch-01",
       "salary": 9500000,
       "salaryType": "monthly",
       "startDate": "2021-03-15",
-      "status": "active",
+      "status": "resigned",
       "avatarUrl": "",
       "createdAt": "2021-03-15T08:00:00Z",
-      "updatedAt": "2026-01-10T14:00:00Z"
+      "updatedAt": "2026-04-27T08:17:11.174Z"
     },
     {
       "id": "emp-002",
@@ -25,14 +89,14 @@
       "nationalId": "079199005678",
       "department": "Bếp",
       "position": "Bếp trưởng",
-      "branchId": "branch-001",
+      "branchId": "branch-01",
       "salary": 18000000,
       "salaryType": "monthly",
       "startDate": "2020-06-01",
-      "status": "active",
+      "status": "resigned",
       "avatarUrl": "",
       "createdAt": "2020-06-01T08:00:00Z",
-      "updatedAt": "2026-02-01T10:00:00Z"
+      "updatedAt": "2026-04-27T08:29:51.044Z"
     },
     {
       "id": "emp-003",
@@ -42,7 +106,7 @@
       "nationalId": "079200012345",
       "department": "Thu ngân",
       "position": "Thu ngân trưởng",
-      "branchId": "branch-002",
+      "branchId": "branch-02",
       "salary": 8500000,
       "salaryType": "monthly",
       "startDate": "2022-01-10",
@@ -59,7 +123,7 @@
       "nationalId": "079198009876",
       "department": "Bếp",
       "position": "Phụ bếp",
-      "branchId": "branch-001",
+      "branchId": "branch-01",
       "salary": 7000000,
       "salaryType": "monthly",
       "startDate": "2023-09-01",
@@ -76,7 +140,7 @@
       "nationalId": "079201002345",
       "department": "Phục vụ",
       "position": "Nhân viên phục vụ",
-      "branchId": "branch-002",
+      "branchId": "branch-02",
       "salary": 6500000,
       "salaryType": "shift",
       "startDate": "2024-06-15",
@@ -93,7 +157,7 @@
       "nationalId": "079197006789",
       "department": "Quản lý cửa hàng",
       "position": "Quản lý chi nhánh",
-      "branchId": "branch-001",
+      "branchId": "branch-01",
       "salary": 22000000,
       "salaryType": "monthly",
       "startDate": "2020-01-05",
@@ -110,7 +174,7 @@
       "nationalId": "079202003456",
       "department": "HR",
       "position": "Chuyên viên nhân sự",
-      "branchId": "branch-001",
+      "branchId": "branch-01",
       "salary": 13000000,
       "salaryType": "monthly",
       "startDate": "2021-08-01",
@@ -127,7 +191,7 @@
       "nationalId": "079199007890",
       "department": "Kế toán",
       "position": "Kế toán trưởng",
-      "branchId": "branch-001",
+      "branchId": "branch-01",
       "salary": 16000000,
       "salaryType": "monthly",
       "startDate": "2020-09-15",
@@ -144,7 +208,7 @@
       "nationalId": "079203004567",
       "department": "Phục vụ",
       "position": "Nhân viên phục vụ",
-      "branchId": "branch-002",
+      "branchId": "branch-02",
       "salary": 6000000,
       "salaryType": "shift",
       "startDate": "2025-01-10",
@@ -161,7 +225,7 @@
       "nationalId": "079200015678",
       "department": "Bếp",
       "position": "Phụ bếp",
-      "branchId": "branch-002",
+      "branchId": "branch-02",
       "salary": 7500000,
       "salaryType": "monthly",
       "startDate": "2023-04-20",
@@ -178,7 +242,7 @@
       "nationalId": "079198012345",
       "department": "Thu ngân",
       "position": "Thu ngân",
-      "branchId": "branch-001",
+      "branchId": "branch-01",
       "salary": 7000000,
       "salaryType": "monthly",
       "startDate": "2022-11-01",
@@ -195,7 +259,7 @@
       "nationalId": "079201009876",
       "department": "Bếp",
       "position": "Đầu bếp chính",
-      "branchId": "branch-003",
+      "branchId": "branch-03",
       "salary": 15000000,
       "salaryType": "monthly",
       "startDate": "2021-05-10",
@@ -212,7 +276,7 @@
       "nationalId": "079202006543",
       "department": "Phục vụ",
       "position": "Trưởng ca phục vụ",
-      "branchId": "branch-003",
+      "branchId": "branch-03",
       "salary": 9000000,
       "salaryType": "monthly",
       "startDate": "2022-07-01",
@@ -229,7 +293,7 @@
       "nationalId": "079199011234",
       "department": "Quản lý cửa hàng",
       "position": "Quản lý chi nhánh",
-      "branchId": "branch-002",
+      "branchId": "branch-02",
       "salary": 20000000,
       "salaryType": "monthly",
       "startDate": "2020-08-01",
@@ -246,7 +310,7 @@
       "nationalId": "079203008765",
       "department": "Phục vụ",
       "position": "Nhân viên phục vụ",
-      "branchId": "branch-003",
+      "branchId": "branch-03",
       "salary": 6200000,
       "salaryType": "hourly",
       "startDate": "2025-03-01",
@@ -263,7 +327,7 @@
       "nationalId": "079200019876",
       "department": "Bếp",
       "position": "Phụ bếp",
-      "branchId": "branch-003",
+      "branchId": "branch-03",
       "salary": 7200000,
       "salaryType": "monthly",
       "startDate": "2024-01-15",
@@ -280,7 +344,7 @@
       "nationalId": "079201006543",
       "department": "Thu ngân",
       "position": "Thu ngân",
-      "branchId": "branch-003",
+      "branchId": "branch-03",
       "salary": 7000000,
       "salaryType": "monthly",
       "startDate": "2023-06-01",
@@ -297,7 +361,7 @@
       "nationalId": "079202007654",
       "department": "Quản lý cửa hàng",
       "position": "Quản lý chi nhánh",
-      "branchId": "branch-003",
+      "branchId": "branch-03",
       "salary": 21000000,
       "salaryType": "monthly",
       "startDate": "2020-12-01",
@@ -314,7 +378,7 @@
       "nationalId": "079197008765",
       "department": "Kế toán",
       "position": "Kế toán viên",
-      "branchId": "branch-001",
+      "branchId": "branch-01",
       "salary": 10000000,
       "salaryType": "monthly",
       "startDate": "2022-03-15",
@@ -331,7 +395,7 @@
       "nationalId": "079204001234",
       "department": "Phục vụ",
       "position": "Nhân viên phục vụ",
-      "branchId": "branch-002",
+      "branchId": "branch-02",
       "salary": 6000000,
       "salaryType": "hourly",
       "startDate": "2025-02-01",
@@ -348,7 +412,7 @@
       "nationalId": "079200023456",
       "department": "Bếp",
       "position": "Phụ bếp",
-      "branchId": "branch-002",
+      "branchId": "branch-02",
       "salary": 7000000,
       "salaryType": "monthly",
       "startDate": "2024-03-01",
@@ -365,7 +429,7 @@
       "nationalId": "079201012345",
       "department": "HR",
       "position": "Trưởng phòng nhân sự",
-      "branchId": "branch-001",
+      "branchId": "branch-01",
       "salary": 25000000,
       "salaryType": "monthly",
       "startDate": "2020-03-01",
@@ -382,14 +446,14 @@
       "nationalId": "079203009876",
       "department": "Phục vụ",
       "position": "Nhân viên phục vụ",
-      "branchId": "branch-001",
+      "branchId": "branch-01",
       "salary": 6500000,
       "salaryType": "shift",
       "startDate": "2024-11-01",
-      "status": "active",
+      "status": "resigned",
       "avatarUrl": "",
       "createdAt": "2024-11-01T08:00:00Z",
-      "updatedAt": "2026-01-01T08:00:00Z"
+      "updatedAt": "2026-04-27T08:41:59.864Z"
     },
     {
       "id": "emp-024",
@@ -399,7 +463,7 @@
       "nationalId": "079198023456",
       "department": "Bếp",
       "position": "Bếp phó",
-      "branchId": "branch-002",
+      "branchId": "branch-02",
       "salary": 12000000,
       "salaryType": "monthly",
       "startDate": "2021-10-01",
@@ -423,7 +487,24 @@
       "avatarUrl": "",
       "id": "_EQS8EEJBVU",
       "createdAt": "2026-04-23T09:55:46.897Z",
-      "updatedAt": "2026-04-23T09:55:46.897Z"
+      "updatedAt": "2026-04-26T13:45:56.329Z"
+    },
+    {
+      "name": "testnhanviendieuchuyen",
+      "email": "testnv@gmail.com",
+      "phone": "0912345678",
+      "nationalId": "012345002034",
+      "department": "Phục vụ",
+      "position": "Nhân viên",
+      "branchId": "branch-03",
+      "startDate": "2026-04-27",
+      "status": "active",
+      "avatarUrl": "",
+      "salary": 0,
+      "salaryType": "monthly",
+      "id": "p3ttIFCDhiQ",
+      "createdAt": "2026-04-27T07:25:08.748Z",
+      "updatedAt": "2026-04-27T07:40:27.634Z"
     }
   ],
   "departments": [
@@ -460,17 +541,17 @@
   ],
   "branches": [
     {
-      "id": "branch-001",
+      "id": "branch-01",
       "name": "Chi nhánh Quận 1",
       "address": "123 Nguyễn Huệ, Q.1, TP.HCM"
     },
     {
-      "id": "branch-002",
+      "id": "branch-02",
       "name": "Chi nhánh Quận 3",
       "address": "45 Võ Văn Tần, Q.3, TP.HCM"
     },
     {
-      "id": "branch-003",
+      "id": "branch-03",
       "name": "Chi nhánh Bình Thạnh",
       "address": "67 Xô Viết Nghệ Tĩnh, Q.Bình Thạnh, TP.HCM"
     }
@@ -1313,12 +1394,12 @@
       "overtimePay": 0,
       "grossSalary": 900000,
       "netSalary": 322500,
-      "status": "draft",
+      "status": "pending_approval",
       "approvedBy": null,
       "paidAt": null,
       "note": "Tự động tính lương tháng 2026-04",
       "createdAt": "2026-04-23T11:56:49.870Z",
-      "updatedAt": "2026-04-23T11:56:49.870Z"
+      "updatedAt": "2026-04-25T03:40:28.982Z"
     },
     {
       "id": "6BW-xSEcfVY",
@@ -1343,12 +1424,12 @@
       "overtimePay": 468750,
       "grossSalary": 6468750,
       "netSalary": 4158750,
-      "status": "draft",
+      "status": "pending_approval",
       "approvedBy": null,
       "paidAt": null,
       "note": "Tự động tính lương tháng 2026-04",
       "createdAt": "2026-04-23T11:56:49.870Z",
-      "updatedAt": "2026-04-23T11:56:49.870Z"
+      "updatedAt": "2026-04-27T07:52:05.319Z"
     },
     {
       "id": "vUe_k8Hrj8Q",
@@ -1864,7 +1945,7 @@
       "employeeId": "emp-006",
       "isActive": true,
       "permissions": [],
-      "branchId": "branch-001",
+      "branchId": "branch-01",
       "lastLoginAt": "2026-04-21T09:15:00Z",
       "createdAt": "2020-01-05T08:00:00Z",
       "updatedAt": "2026-04-21T09:15:00Z"
@@ -1883,18 +1964,17 @@
       "updatedAt": "2026-04-20T10:00:00Z"
     },
     {
-      "username": "test1",
-      "email": "testa@gmail.com",
-      "role": "staff",
-      "password": "1223321",
-      "employeeId": null,
+      "id": "acc-005",
+      "username": "giamdoc",
+      "email": "giamdoc@giakhanh.vn",
+      "role": "director",
+      "employeeId": "emp-001",
       "isActive": true,
       "permissions": [],
       "branchId": null,
-      "id": "vNi99F3sLIE",
-      "lastLoginAt": null,
-      "createdAt": "2026-04-23T12:27:50.239Z",
-      "updatedAt": "2026-04-23T12:28:19.545Z"
+      "lastLoginAt": "2026-04-16T08:00:00Z",
+      "createdAt": "2020-01-01T08:00:00Z",
+      "updatedAt": "2026-04-16T08:00:00Z"
     }
   ],
   "leaves": [
@@ -2032,6 +2112,1260 @@
     }
   ],
   "shifts": [],
-  "audit-logs": [],
+  "rewards": [
+    {
+      "id": "rwd-001",
+      "employeeId": "emp-001",
+      "type": "bonus",
+      "title": "Thưởng hoàn thành KPI Q1/2026",
+      "amount": 2000000,
+      "reason": "Hoàn thành xuất sắc KPI quý 1/2026, doanh thu vượt 120% chỉ tiêu",
+      "effectiveDate": "2026-04-01",
+      "linkedPayrollMonth": "2026-04",
+      "approvedBy": null,
+      "createdAt": "2026-04-01T08:00:00Z",
+      "updatedAt": "2026-04-01T08:00:00Z"
+    },
+    {
+      "id": "rwd-002",
+      "employeeId": "emp-002",
+      "type": "commendation",
+      "title": "Biểu dương tinh thần phục vụ",
+      "amount": 0,
+      "reason": "Nhận được nhiều phản hồi tích cực từ khách hàng trong tháng 3/2026",
+      "effectiveDate": "2026-03-15",
+      "linkedPayrollMonth": null,
+      "approvedBy": null,
+      "createdAt": "2026-03-15T09:00:00Z",
+      "updatedAt": "2026-03-15T09:00:00Z"
+    },
+    {
+      "id": "rwd-003",
+      "employeeId": "emp-004",
+      "type": "certificate",
+      "title": "Giấy khen Nhân viên gương mẫu",
+      "amount": 500000,
+      "reason": "Được bình chọn nhân viên gương mẫu quý 1/2026 bởi tập thể chi nhánh",
+      "effectiveDate": "2026-04-10",
+      "linkedPayrollMonth": "2026-04",
+      "approvedBy": null,
+      "createdAt": "2026-04-10T10:00:00Z",
+      "updatedAt": "2026-04-10T10:00:00Z"
+    },
+    {
+      "id": "rwd-004",
+      "employeeId": "emp-003",
+      "type": "bonus",
+      "title": "Thưởng sáng kiến cải tiến quy trình",
+      "amount": 3000000,
+      "reason": "Đề xuất quy trình chế biến mới giúp giảm 15% thời gian phục vụ và tiết kiệm nguyên liệu",
+      "effectiveDate": "2026-04-15",
+      "linkedPayrollMonth": "2026-04",
+      "approvedBy": null,
+      "createdAt": "2026-04-15T08:30:00Z",
+      "updatedAt": "2026-04-15T08:30:00Z"
+    },
+    {
+      "id": "rwd-005",
+      "employeeId": "emp-005",
+      "type": "commendation",
+      "title": "Biểu dương chuyên cần",
+      "amount": 1000000,
+      "reason": "Không nghỉ phép 1 ngày nào trong 6 tháng liên tiếp, luôn đúng giờ và hoàn thành tốt công việc",
+      "effectiveDate": "2026-04-20",
+      "linkedPayrollMonth": "2026-04",
+      "approvedBy": null,
+      "createdAt": "2026-04-20T07:00:00Z",
+      "updatedAt": "2026-04-20T07:00:00Z"
+    }
+  ],
+  "disciplines": [
+    {
+      "id": "dsc-001",
+      "employeeId": "emp-003",
+      "type": "warning",
+      "title": "Cảnh cáo vi phạm nội quy",
+      "penaltyAmount": 0,
+      "reason": "Vi phạm nội quy vệ sinh bếp 2 lần trong tháng 3/2026 theo biên bản kiểm tra",
+      "effectiveDate": "2026-03-20",
+      "endDate": "2026-06-20",
+      "status": "active",
+      "linkedPayrollMonth": null,
+      "issuedBy": null,
+      "createdAt": "2026-03-20T14:00:00Z",
+      "updatedAt": "2026-03-20T14:00:00Z"
+    },
+    {
+      "id": "dsc-002",
+      "employeeId": "emp-005",
+      "type": "fine",
+      "title": "Phạt tiền do gây hao hụt nguyên liệu",
+      "penaltyAmount": 500000,
+      "reason": "Gây hao hụt nguyên liệu vượt mức cho phép 20% trong ca trực ngày 10/04/2026",
+      "effectiveDate": "2026-04-12",
+      "endDate": null,
+      "status": "active",
+      "linkedPayrollMonth": "2026-04",
+      "issuedBy": null,
+      "createdAt": "2026-04-12T16:00:00Z",
+      "updatedAt": "2026-04-12T16:00:00Z"
+    }
+  ],
+  "insurance": [
+    {
+      "id": "ins-001",
+      "employeeId": "emp-001",
+      "insuredSalary": 8000000,
+      "bhxhRate": 0.08,
+      "bhytRate": 0.015,
+      "bhtnRate": 0.01,
+      "bhxhEmployer": 0.175,
+      "bhytEmployer": 0.03,
+      "bhtnEmployer": 0.01,
+      "startDate": "2024-01-01",
+      "endDate": null,
+      "status": "active",
+      "note": "Đóng BH từ ngày vào làm",
+      "createdAt": "2024-01-01T08:00:00Z",
+      "updatedAt": "2026-01-01T08:00:00Z"
+    },
+    {
+      "id": "ins-002",
+      "employeeId": "emp-002",
+      "insuredSalary": 7500000,
+      "bhxhRate": 0.08,
+      "bhytRate": 0.015,
+      "bhtnRate": 0.01,
+      "bhxhEmployer": 0.175,
+      "bhytEmployer": 0.03,
+      "bhtnEmployer": 0.01,
+      "startDate": "2024-03-01",
+      "endDate": null,
+      "status": "active",
+      "note": null,
+      "createdAt": "2024-03-01T08:00:00Z",
+      "updatedAt": "2026-01-01T08:00:00Z"
+    },
+    {
+      "id": "ins-003",
+      "employeeId": "emp-004",
+      "insuredSalary": 6500000,
+      "bhxhRate": 0.08,
+      "bhytRate": 0.015,
+      "bhtnRate": 0.01,
+      "bhxhEmployer": 0.175,
+      "bhytEmployer": 0.03,
+      "bhtnEmployer": 0.01,
+      "startDate": "2024-06-01",
+      "endDate": null,
+      "status": "active",
+      "note": null,
+      "createdAt": "2024-06-01T08:00:00Z",
+      "updatedAt": "2026-01-01T08:00:00Z"
+    },
+    {
+      "id": "ins-004",
+      "employeeId": "emp-003",
+      "insuredSalary": 9000000,
+      "bhxhRate": 0.08,
+      "bhytRate": 0.015,
+      "bhtnRate": 0.01,
+      "bhxhEmployer": 0.175,
+      "bhytEmployer": 0.03,
+      "bhtnEmployer": 0.01,
+      "startDate": "2024-02-15",
+      "endDate": null,
+      "status": "suspended",
+      "note": "Tạm dừng do nghỉ không lương",
+      "createdAt": "2024-02-15T08:00:00Z",
+      "updatedAt": "2026-03-01T10:00:00Z"
+    }
+  ],
+  "resignations": [
+    {
+      "employeeId": "_EQS8EEJBVU",
+      "type": "voluntary",
+      "submittedDate": "2026-04-24",
+      "lastWorkingDate": "2026-05-24",
+      "reason": "Không thể tiếp tục làm việc",
+      "handoverNote": "[Từ chối] Bạn vẫn đi làm được tiếp tục, sẽ giảm giờ làm",
+      "id": "Hoy_3-UmwDA",
+      "status": "rejected",
+      "approvedBy": "acc-001",
+      "approvedAt": "2026-04-25T03:50:57.295Z",
+      "accountDeactivatedAt": null,
+      "createdAt": "2026-04-24T12:29:02.317Z",
+      "updatedAt": "2026-04-25T03:50:57.295Z"
+    },
+    {
+      "employeeId": "p3ttIFCDhiQ",
+      "type": "terminated",
+      "submittedDate": "2026-04-27",
+      "lastWorkingDate": "2026-05-27",
+      "reason": "kjssdlksdjlskfdjslfajd",
+      "handoverNote": "[Từ chối] NV chua hoan thanh ban giao, de nghi lam them 1 thang",
+      "id": "3OqRgNutJyQ",
+      "status": "rejected",
+      "approvedBy": "acc-002",
+      "approvedAt": "2026-04-27T08:16:19.377Z",
+      "accountDeactivatedAt": null,
+      "createdAt": "2026-04-27T07:52:57.857Z",
+      "updatedAt": "2026-04-27T08:16:19.377Z"
+    },
+    {
+      "employeeId": "emp-001",
+      "type": "voluntary",
+      "submittedDate": "2026-04-27",
+      "lastWorkingDate": "2026-06-15",
+      "reason": "Nhan vien xin nghi vi ly do ca nhan, chuyen huong cong tac",
+      "handoverNote": "Da hoan tat ban giao toan bo.",
+      "id": "tzpM4E9eyt4",
+      "status": "completed",
+      "approvedBy": "acc-002",
+      "approvedAt": "2026-04-27T08:16:43.200Z",
+      "accountDeactivatedAt": "2026-04-27T08:16:43.200Z",
+      "createdAt": "2026-04-27T08:03:13.877Z",
+      "updatedAt": "2026-04-27T08:17:11.134Z"
+    },
+    {
+      "employeeId": "emp-002",
+      "type": "voluntary",
+      "submittedDate": "2026-04-27",
+      "lastWorkingDate": "2026-05-27",
+      "reason": "édsfgsfsgd",
+      "handoverNote": "[Từ chối] Ly do tu choi test.",
+      "id": "l3yctzSXehk",
+      "status": "rejected",
+      "approvedBy": "acc-002",
+      "approvedAt": "2026-04-27T08:19:49.837Z",
+      "accountDeactivatedAt": null,
+      "createdAt": "2026-04-27T08:07:35.830Z",
+      "updatedAt": "2026-04-27T08:19:49.837Z"
+    },
+    {
+      "employeeId": "emp-002",
+      "type": "voluntary",
+      "submittedDate": "2026-04-27",
+      "lastWorkingDate": "2026-05-27",
+      "reason": "aaaa\\alđagkdf",
+      "handoverNote": "",
+      "id": "k428h_1k1bM",
+      "status": "approved",
+      "approvedBy": "acc-002",
+      "approvedAt": "2026-04-27T08:29:50.959Z",
+      "accountDeactivatedAt": "2026-04-27T08:29:50.959Z",
+      "createdAt": "2026-04-27T08:23:24.874Z",
+      "updatedAt": "2026-04-27T08:29:50.959Z"
+    },
+    {
+      "employeeId": "emp-004",
+      "type": "voluntary",
+      "submittedDate": "2026-04-27",
+      "lastWorkingDate": "2026-06-01",
+      "reason": "Ly do ca nhan muon nghi viec vi muon di du lich nhieu noi tren the gioi.",
+      "handoverNote": "[Từ chối] Can hoan thanh du an truoc khi nghi",
+      "id": "knxk6UrLsr8",
+      "status": "rejected",
+      "approvedBy": "acc-002",
+      "approvedAt": "2026-04-27T08:42:41.709Z",
+      "accountDeactivatedAt": null,
+      "createdAt": "2026-04-27T08:30:44.444Z",
+      "updatedAt": "2026-04-27T08:42:41.709Z"
+    },
+    {
+      "employeeId": "emp-023",
+      "type": "voluntary",
+      "submittedDate": "2026-04-27",
+      "lastWorkingDate": "2026-06-01",
+      "reason": "Test approve flow - don 1",
+      "handoverNote": "",
+      "id": "hBQotyfmSwQ",
+      "status": "approved",
+      "approvedBy": "acc-002",
+      "approvedAt": "2026-04-27T08:41:59.777Z",
+      "accountDeactivatedAt": "2026-04-27T08:41:59.777Z",
+      "createdAt": "2026-04-27T08:40:14.262Z",
+      "updatedAt": "2026-04-27T08:41:59.777Z"
+    }
+  ],
+  "attendance-supplements": [],
+  "audit-logs": [
+    {
+      "userId": "acc-001",
+      "userName": "admin",
+      "action": "reject",
+      "module": "offboarding",
+      "targetId": "Hoy_3-UmwDA",
+      "targetName": "Đơn nghỉ việc #Hoy_3-Um",
+      "changes": {
+        "status": {
+          "before": "pending",
+          "after": "rejected"
+        },
+        "reason": {
+          "before": null,
+          "after": "Bạn vẫn đi làm được tiếp tục, sẽ giảm giờ làm"
+        }
+      },
+      "ipAddress": "mock-ip",
+      "id": "MhUR9-lCPXE",
+      "timestamp": "2026-04-25T03:50:57.326Z"
+    },
+    {
+      "userId": "acc-001",
+      "userName": "admin",
+      "action": "update",
+      "module": "employees",
+      "targetId": "tfr-001",
+      "targetName": "Thực thi hỗ trợ tạm thời test a",
+      "changes": {
+        "status": {
+          "before": "pending",
+          "after": "active"
+        },
+        "from": {
+          "before": null,
+          "after": "branch-02"
+        },
+        "to": {
+          "before": null,
+          "after": "branch-01"
+        }
+      },
+      "ipAddress": "mock-ip",
+      "id": "ZHLaRqz8xfo",
+      "timestamp": "2026-04-26T13:32:28.964Z"
+    },
+    {
+      "userId": "acc-002",
+      "userName": "hr.thao",
+      "action": "update",
+      "module": "employees",
+      "targetId": "_EQS8EEJBVU",
+      "targetName": "test a",
+      "changes": null,
+      "ipAddress": "mock-ip",
+      "id": "MzcNd1PvM7M",
+      "timestamp": "2026-04-26T13:45:56.364Z"
+    },
+    {
+      "userId": "acc-002",
+      "userName": "hr.thao",
+      "action": "update",
+      "module": "employees",
+      "targetId": "tfr-001",
+      "targetName": "Hoàn tất hỗ trợ tạm thời test a",
+      "changes": {
+        "status": {
+          "before": "active",
+          "after": "completed"
+        }
+      },
+      "ipAddress": "mock-ip",
+      "id": "SgaKZGpGavg",
+      "timestamp": "2026-04-26T13:45:56.365Z"
+    },
+    {
+      "userId": "acc-001",
+      "userName": "admin",
+      "action": "create",
+      "module": "employees",
+      "targetId": "tfr-1777242823134",
+      "targetName": "Đề xuất hỗ trợ — Phụ bếp",
+      "changes": null,
+      "ipAddress": "mock-ip",
+      "id": "HQBU7jaPBXA",
+      "timestamp": "2026-04-26T22:33:43.351Z"
+    },
+    {
+      "userId": "acc-002",
+      "userName": "hr.thao",
+      "action": "update",
+      "module": "employees",
+      "targetId": "7MnNsSJw9TU",
+      "targetName": "Điều phối → Lê Văn Sỹ",
+      "changes": {
+        "phase": {
+          "before": "requested",
+          "after": "pending_source_approval"
+        }
+      },
+      "ipAddress": "mock-ip",
+      "id": "syeUZWqhC_s",
+      "timestamp": "2026-04-26T22:36:53.124Z"
+    },
+    {
+      "userId": "acc-003",
+      "userName": "branch.q1",
+      "action": "create",
+      "module": "employees",
+      "targetId": "b52f8540-bdf9-47a5-b530-49aff7501e64",
+      "targetName": "Đề xuất hỗ trợ — Phụ bếp",
+      "changes": null,
+      "ipAddress": "mock-ip",
+      "id": "aJKoH5las5A",
+      "timestamp": "2026-04-27T06:51:18.477Z"
+    },
+    {
+      "userId": "acc-003",
+      "userName": "branch.q1",
+      "action": "create",
+      "module": "employees",
+      "targetId": "ec1cfa5c-5659-4db1-9607-6ffcaa88f4d8",
+      "targetName": "Đề xuất hỗ trợ — Nhân viên",
+      "changes": null,
+      "ipAddress": "mock-ip",
+      "id": "yPWdbNNbBmg",
+      "timestamp": "2026-04-27T07:03:19.276Z"
+    },
+    {
+      "userId": "acc-002",
+      "userName": "hr.thao",
+      "action": "update",
+      "module": "employees",
+      "targetId": "Irf0rfZnVC8",
+      "targetName": "Điều phối → Phan Xích Long",
+      "changes": {
+        "phase": {
+          "before": "requested",
+          "after": "pending_source_approval"
+        }
+      },
+      "ipAddress": "mock-ip",
+      "id": "0-KS4kxQN1M",
+      "timestamp": "2026-04-27T07:08:39.438Z"
+    },
+    {
+      "userId": "acc-002",
+      "userName": "hr.thao",
+      "action": "update",
+      "module": "employees",
+      "targetId": "XhquhXYU8ro",
+      "targetName": "Điều phối → Hai Bà Trưng",
+      "changes": {
+        "phase": {
+          "before": "requested",
+          "after": "pending_source_approval"
+        }
+      },
+      "ipAddress": "mock-ip",
+      "id": "2-64SRTdfow",
+      "timestamp": "2026-04-27T07:14:55.764Z"
+    },
+    {
+      "userId": "acc-001",
+      "userName": "admin",
+      "action": "create",
+      "module": "employees",
+      "targetId": "613f8b2f-eae4-474a-9d0b-7892a9f5d249",
+      "targetName": "testnhanviendieuchuyen",
+      "changes": null,
+      "ipAddress": "mock-ip",
+      "id": "Snz9lOrT_68",
+      "timestamp": "2026-04-27T07:25:08.840Z"
+    },
+    {
+      "userId": "acc-002",
+      "userName": "hr.thao",
+      "action": "update",
+      "module": "employees",
+      "targetId": "p3ttIFCDhiQ",
+      "targetName": "testnhanviendieuchuyen",
+      "changes": {
+        "branchId": {
+          "before": "branch-02",
+          "after": "branch-03"
+        }
+      },
+      "ipAddress": "mock-ip",
+      "id": "dvlf3je1B84",
+      "timestamp": "2026-04-27T07:40:27.730Z"
+    },
+    {
+      "userId": "acc-003",
+      "userName": "branch.q1",
+      "action": "create",
+      "module": "employees",
+      "targetId": "61275399-2f9b-4494-a5e3-5f5d4142c2ec",
+      "targetName": "Đề xuất hỗ trợ — Nhân viên",
+      "changes": null,
+      "ipAddress": "mock-ip",
+      "id": "mBRhdKv2nAU",
+      "timestamp": "2026-04-27T07:41:34.898Z"
+    },
+    {
+      "userId": "acc-003",
+      "userName": "branch.q1",
+      "action": "create",
+      "module": "employees",
+      "targetId": "094918fc-b953-4e02-ae44-c070291223da",
+      "targetName": "Đề xuất hỗ trợ — Phụ bếp",
+      "changes": null,
+      "ipAddress": "mock-ip",
+      "id": "kITfDiPs6F4",
+      "timestamp": "2026-04-27T07:45:07.873Z"
+    },
+    {
+      "userId": "acc-002",
+      "userName": "hr.thao",
+      "action": "update",
+      "module": "employees",
+      "targetId": "4RTwXerrbbw",
+      "targetName": "Điều phối → Lê Văn Sỹ",
+      "changes": {
+        "phase": {
+          "before": "requested",
+          "after": "pending_source_approval"
+        }
+      },
+      "ipAddress": "mock-ip",
+      "id": "gei3fd-rqv8",
+      "timestamp": "2026-04-27T07:46:25.180Z"
+    },
+    {
+      "userId": "acc-002",
+      "userName": "hr.thao",
+      "action": "update",
+      "module": "employees",
+      "targetId": "cJsYVnMRpoE",
+      "targetName": "Điều phối → Hai Bà Trưng",
+      "changes": {
+        "phase": {
+          "before": "requested",
+          "after": "pending_source_approval"
+        }
+      },
+      "ipAddress": "mock-ip",
+      "id": "KJL0n_ppSAU",
+      "timestamp": "2026-04-27T07:49:54.846Z"
+    },
+    {
+      "userId": "acc-006",
+      "userName": "branch.q3",
+      "action": "approve",
+      "module": "employees",
+      "targetId": "cJsYVnMRpoE",
+      "targetName": "Chấp nhận điều chuyển — testnhanviendieuchuyen",
+      "changes": {
+        "phase": {
+          "before": "pending_source_approval",
+          "after": "approved"
+        }
+      },
+      "ipAddress": "mock-ip",
+      "id": "8la8abx1gyY",
+      "timestamp": "2026-04-27T07:50:17.132Z"
+    },
+    {
+      "userId": "acc-002",
+      "userName": "hr.thao",
+      "action": "approve",
+      "module": "employees",
+      "targetId": "cJsYVnMRpoE",
+      "targetName": "Xác nhận chính thức — testnhanviendieuchuyen",
+      "changes": {
+        "phase": {
+          "before": "approved",
+          "after": "active"
+        }
+      },
+      "ipAddress": "mock-ip",
+      "id": "0-8eaA_-1-Q",
+      "timestamp": "2026-04-27T07:50:32.507Z"
+    },
+    {
+      "userId": "acc-002",
+      "userName": "hr.thao",
+      "action": "reject",
+      "module": "offboarding",
+      "targetId": "3OqRgNutJyQ",
+      "targetName": "Đơn nghỉ việc #3OqRgNut",
+      "changes": {
+        "status": {
+          "before": "pending",
+          "after": "rejected"
+        },
+        "reason": {
+          "before": null,
+          "after": "NV chua hoan thanh ban giao, de nghi lam them 1 thang"
+        }
+      },
+      "ipAddress": "mock-ip",
+      "id": "QUzYCGEaYhg",
+      "timestamp": "2026-04-27T08:16:19.536Z"
+    },
+    {
+      "userId": "acc-002",
+      "userName": "hr.thao",
+      "action": "update",
+      "module": "employees",
+      "targetId": "emp-001",
+      "targetName": "Nguyễn Văn An",
+      "changes": {
+        "status": {
+          "before": "active",
+          "after": "resigned"
+        }
+      },
+      "ipAddress": "mock-ip",
+      "id": "Vl2xTAkq1RI",
+      "timestamp": "2026-04-27T08:16:43.332Z"
+    },
+    {
+      "userId": "acc-002",
+      "userName": "hr.thao",
+      "action": "approve",
+      "module": "offboarding",
+      "targetId": "tzpM4E9eyt4",
+      "targetName": "Đơn nghỉ việc NV emp-001",
+      "changes": {
+        "status": {
+          "before": "pending",
+          "after": "approved"
+        }
+      },
+      "ipAddress": "mock-ip",
+      "id": "YXfjqCASDyA",
+      "timestamp": "2026-04-27T08:16:43.335Z"
+    },
+    {
+      "userId": "acc-002",
+      "userName": "hr.thao",
+      "action": "update",
+      "module": "employees",
+      "targetId": "emp-001",
+      "targetName": "Nguyễn Văn An",
+      "changes": null,
+      "ipAddress": "mock-ip",
+      "id": "HBE1N_Q4Ezo",
+      "timestamp": "2026-04-27T08:17:11.204Z"
+    },
+    {
+      "userId": "acc-002",
+      "userName": "hr.thao",
+      "action": "reject",
+      "module": "offboarding",
+      "targetId": "l3yctzSXehk",
+      "targetName": "Đơn nghỉ việc #l3yctzSX",
+      "changes": {
+        "status": {
+          "before": "pending",
+          "after": "rejected"
+        },
+        "reason": {
+          "before": null,
+          "after": "Ly do tu choi test."
+        }
+      },
+      "ipAddress": "mock-ip",
+      "id": "jtkSHBpkBi4",
+      "timestamp": "2026-04-27T08:19:49.955Z"
+    },
+    {
+      "userId": "acc-002",
+      "userName": "hr.thao",
+      "action": "update",
+      "module": "employees",
+      "targetId": "emp-002",
+      "targetName": "Trần Thị Bảo",
+      "changes": {
+        "status": {
+          "before": "active",
+          "after": "resigned"
+        }
+      },
+      "ipAddress": "mock-ip",
+      "id": "3v2NHVqqHwA",
+      "timestamp": "2026-04-27T08:29:51.512Z"
+    },
+    {
+      "userId": "acc-002",
+      "userName": "hr.thao",
+      "action": "approve",
+      "module": "offboarding",
+      "targetId": "k428h_1k1bM",
+      "targetName": "Đơn nghỉ việc NV emp-002",
+      "changes": {
+        "status": {
+          "before": "pending",
+          "after": "approved"
+        }
+      },
+      "ipAddress": "mock-ip",
+      "id": "FgrKIS1MZXc",
+      "timestamp": "2026-04-27T08:29:51.513Z"
+    },
+    {
+      "userId": "acc-002",
+      "userName": "hr.thao",
+      "action": "update",
+      "module": "employees",
+      "targetId": "emp-023",
+      "targetName": "Lưu Hoàng Nam",
+      "changes": {
+        "status": {
+          "before": "active",
+          "after": "resigned"
+        }
+      },
+      "ipAddress": "mock-ip",
+      "id": "v0en11jj1nY",
+      "timestamp": "2026-04-27T08:42:00.091Z"
+    },
+    {
+      "userId": "acc-002",
+      "userName": "hr.thao",
+      "action": "approve",
+      "module": "offboarding",
+      "targetId": "hBQotyfmSwQ",
+      "targetName": "Đơn nghỉ việc NV emp-023",
+      "changes": {
+        "status": {
+          "before": "pending",
+          "after": "approved"
+        }
+      },
+      "ipAddress": "mock-ip",
+      "id": "MuWJ-O1xUbA",
+      "timestamp": "2026-04-27T08:42:00.107Z"
+    },
+    {
+      "userId": "acc-002",
+      "userName": "hr.thao",
+      "action": "reject",
+      "module": "offboarding",
+      "targetId": "knxk6UrLsr8",
+      "targetName": "Đơn nghỉ việc #knxk6UrL",
+      "changes": {
+        "status": {
+          "before": "pending",
+          "after": "rejected"
+        },
+        "reason": {
+          "before": null,
+          "after": "Can hoan thanh du an truoc khi nghi"
+        }
+      },
+      "ipAddress": "mock-ip",
+      "id": "e-yTUyMTQao",
+      "timestamp": "2026-04-27T08:42:41.763Z"
+    }
+  ],
+  "transfers": [
+    {
+      "id": "7MnNsSJw9TU",
+      "type": "temporary",
+      "phase": "pending_source_approval",
+      "requestedBy": "acc-001",
+      "requestedByName": "admin",
+      "requestedByBranchId": "",
+      "direction": "receive",
+      "requiredPosition": "Phụ bếp",
+      "requiredQuantity": 2,
+      "requestedStartDate": "2026-12-05",
+      "requestedEndDate": "2026-12-06",
+      "reason": "Chi nhanh dang thieu nhan su bep do tang luong khach",
+      "sourceBranchId": "branch-02",
+      "hrDispatchNote": "Chi nhanh nay dang du nhan su thang 5",
+      "hrDispatchedBy": "acc-002",
+      "hrDispatchedAt": "2026-04-26T22:36:52.959Z",
+      "sourceResponse": "pending",
+      "sourceResponseBy": null,
+      "sourceResponseAt": null,
+      "sourceResponseNote": null,
+      "employeeId": null,
+      "employeeName": null,
+      "fromBranchId": null,
+      "toBranchId": null,
+      "newPosition": null,
+      "decisionNumber": null,
+      "effectiveDate": null,
+      "endDate": null,
+      "allowance": null,
+      "executedBy": null,
+      "executedAt": null,
+      "createdAt": "2026-04-26T22:33:43.134Z",
+      "updatedAt": "2026-04-26T22:36:52.959Z"
+    },
+    {
+      "id": "Irf0rfZnVC8",
+      "type": "temporary",
+      "phase": "pending_source_approval",
+      "requestedBy": "acc-003",
+      "requestedByName": "branch.q1",
+      "requestedByBranchId": "branch-01",
+      "direction": "receive",
+      "requiredPosition": "Phụ bếp",
+      "requiredQuantity": 2,
+      "requestedStartDate": "2026-06-01",
+      "requestedEndDate": "2026-06-30",
+      "reason": "Chi nhanh thieu nhan su bep do tang luong khach mua he",
+      "sourceBranchId": "branch-04",
+      "hrDispatchNote": "Chi nhanh nay co nhan su phu hop",
+      "hrDispatchedBy": "acc-002",
+      "hrDispatchedAt": "2026-04-27T07:08:39.244Z",
+      "sourceResponse": "pending",
+      "sourceResponseBy": null,
+      "sourceResponseAt": null,
+      "sourceResponseNote": null,
+      "employeeId": null,
+      "employeeName": null,
+      "fromBranchId": null,
+      "toBranchId": null,
+      "newPosition": null,
+      "decisionNumber": null,
+      "effectiveDate": null,
+      "endDate": null,
+      "allowance": null,
+      "executedBy": null,
+      "executedAt": null,
+      "createdAt": "2026-04-27T06:51:18.132Z",
+      "updatedAt": "2026-04-27T07:08:39.244Z"
+    },
+    {
+      "id": "XhquhXYU8ro",
+      "type": "temporary",
+      "phase": "pending_source_approval",
+      "requestedBy": "acc-003",
+      "requestedByName": "branch.q1",
+      "requestedByBranchId": "branch-01",
+      "direction": "receive",
+      "requiredPosition": "Nhân viên",
+      "requiredQuantity": 1,
+      "requestedStartDate": "2026-04-28",
+      "requestedEndDate": "2026-04-30",
+      "reason": "thiêukjhkhkhhkjhj",
+      "sourceBranchId": "branch-03",
+      "hrDispatchNote": "Hai Ba Trung help us please",
+      "hrDispatchedBy": "acc-002",
+      "hrDispatchedAt": "2026-04-27T07:14:55.721Z",
+      "sourceResponse": "pending",
+      "sourceResponseBy": null,
+      "sourceResponseAt": null,
+      "sourceResponseNote": null,
+      "employeeId": null,
+      "employeeName": null,
+      "fromBranchId": null,
+      "toBranchId": null,
+      "newPosition": null,
+      "decisionNumber": null,
+      "effectiveDate": null,
+      "endDate": null,
+      "allowance": null,
+      "executedBy": null,
+      "executedAt": null,
+      "createdAt": "2026-04-27T07:03:19.236Z",
+      "updatedAt": "2026-04-27T07:14:55.721Z"
+    },
+    {
+      "id": "cJsYVnMRpoE",
+      "type": "temporary",
+      "phase": "active",
+      "requestedBy": "acc-003",
+      "requestedByName": "branch.q1",
+      "requestedByBranchId": "branch-01",
+      "direction": "receive",
+      "requiredPosition": "Nhân viên",
+      "requiredQuantity": 1,
+      "requestedStartDate": "2026-04-27",
+      "requestedEndDate": "2026-05-08",
+      "reason": "zjajflsdajfljlkfjlkaf",
+      "sourceBranchId": "branch-03",
+      "hrDispatchNote": "abdbđbadb",
+      "hrDispatchedBy": "acc-002",
+      "hrDispatchedAt": "2026-04-27T07:49:54.818Z",
+      "sourceResponse": "accepted",
+      "sourceResponseBy": "acc-006",
+      "sourceResponseAt": "2026-04-27T07:50:17.085Z",
+      "sourceResponseNote": "dsfdsggg",
+      "employeeId": "p3ttIFCDhiQ",
+      "employeeName": "testnhanviendieuchuyen",
+      "fromBranchId": "branch-03",
+      "toBranchId": "branch-01",
+      "newPosition": null,
+      "decisionNumber": null,
+      "effectiveDate": "2026-04-27",
+      "endDate": "2026-05-08",
+      "allowance": 100000,
+      "executedBy": "acc-002",
+      "executedAt": "2026-04-27T07:50:32.471Z",
+      "createdAt": "2026-04-27T07:41:34.853Z",
+      "updatedAt": "2026-04-27T07:50:32.471Z"
+    },
+    {
+      "id": "4RTwXerrbbw",
+      "type": "temporary",
+      "phase": "pending_source_approval",
+      "requestedBy": "acc-003",
+      "requestedByName": "branch.q1",
+      "requestedByBranchId": "branch-01",
+      "direction": "receive",
+      "requiredPosition": "Phụ bếp",
+      "requiredQuantity": 1,
+      "requestedStartDate": "60701-02-02",
+      "requestedEndDate": "60731-02-02",
+      "reason": "Can ho tro phu bep cho chi nhanh trong thang 7",
+      "sourceBranchId": "branch-02",
+      "hrDispatchNote": "Xin chi nhanh ho tro 1 phu bep",
+      "hrDispatchedBy": "acc-002",
+      "hrDispatchedAt": "2026-04-27T07:46:25.120Z",
+      "sourceResponse": "pending",
+      "sourceResponseBy": null,
+      "sourceResponseAt": null,
+      "sourceResponseNote": null,
+      "employeeId": null,
+      "employeeName": null,
+      "fromBranchId": null,
+      "toBranchId": null,
+      "newPosition": null,
+      "decisionNumber": null,
+      "effectiveDate": null,
+      "endDate": null,
+      "allowance": null,
+      "executedBy": null,
+      "executedAt": null,
+      "createdAt": "2026-04-27T07:45:07.645Z",
+      "updatedAt": "2026-04-27T07:46:25.120Z"
+    }
+  ],
+  "data-locks": [],
+  "notifications": [
+    {
+      "id": "notif-001",
+      "type": "contract_expiring_30",
+      "title": "Hợp đồng sắp hết hạn — còn 25 ngày",
+      "message": "Hợp đồng của Trần Thị Bảo sẽ hết hạn vào 22/05/2026.",
+      "recipientType": "hr_admin",
+      "recipientBranchId": null,
+      "relatedModule": "contracts",
+      "relatedId": "contract-001",
+      "isRead": true,
+      "createdAt": "2026-04-27T09:00:00Z"
+    },
+    {
+      "id": "notif-002",
+      "type": "transfer_requested",
+      "title": "Đề xuất bổ sung nhân sự mới",
+      "message": "Chi nhánh Quận 1 cần bổ sung 1 Bếp trưởng từ ngày 01/05/2026.",
+      "recipientType": "hr_admin",
+      "recipientBranchId": null,
+      "relatedModule": "transfers",
+      "relatedId": "transfer-001",
+      "isRead": true,
+      "createdAt": "2026-04-27T08:30:00Z"
+    },
+    {
+      "id": "notif-003",
+      "type": "payroll_approved",
+      "title": "Bảng lương tháng 04/2026 đã được duyệt",
+      "message": "Ban Giám đốc đã phê duyệt. Có thể tiến hành chi lương.",
+      "recipientType": "accountant",
+      "recipientBranchId": null,
+      "relatedModule": "payroll",
+      "relatedId": "04-2026",
+      "isRead": false,
+      "createdAt": "2026-04-26T14:00:00Z"
+    },
+    {
+      "id": "notif-004",
+      "type": "resignation_submitted",
+      "title": "Đơn nghỉ việc mới",
+      "message": "Nguyễn Văn An đã nộp đơn nghỉ việc. Ngày làm cuối: 15/05/2026.",
+      "recipientType": "hr_admin",
+      "recipientBranchId": null,
+      "relatedModule": "offboarding",
+      "relatedId": "resign-001",
+      "isRead": true,
+      "createdAt": "2026-04-26T10:00:00Z"
+    },
+    {
+      "id": "notif-005",
+      "type": "transfer_dispatched",
+      "title": "HR yêu cầu hỗ trợ nhân sự",
+      "message": "HR đề nghị chi nhánh bạn cho mượn Phụ bếp sang Quận 1.",
+      "recipientType": "specific_branch",
+      "recipientBranchId": "branch-03",
+      "relatedModule": "transfers",
+      "relatedId": "transfer-002",
+      "isRead": true,
+      "createdAt": "2026-04-27T07:00:00Z"
+    },
+    {
+      "id": "notif-006",
+      "type": "reward_added",
+      "title": "Khen thưởng mới",
+      "message": "HR đã ghi nhận khen thưởng cho Trần Minh: Nhân viên xuất sắc Q1.",
+      "recipientType": "specific_branch",
+      "recipientBranchId": "branch-01",
+      "relatedModule": "rewards",
+      "relatedId": "reward-001",
+      "isRead": true,
+      "createdAt": "2026-04-26T16:00:00Z"
+    },
+    {
+      "id": "fmkE6l-VOaU",
+      "type": "transfer_requested",
+      "title": "Đề xuất cho mượn nhân sự mới",
+      "message": "Chi nhánh Nguyễn Huệ cần bổ sung 2 Phụ bếp từ ngày 1/6/2026.",
+      "recipientType": "hr_admin",
+      "recipientBranchId": null,
+      "relatedModule": "transfers",
+      "relatedId": "b52f8540-bdf9-47a5-b530-49aff7501e64",
+      "isRead": false,
+      "createdAt": "2026-04-27T06:51:18.269Z"
+    },
+    {
+      "id": "z4bmpVq64E0",
+      "type": "transfer_requested",
+      "title": "Đề xuất cho mượn nhân sự mới",
+      "message": "Chi nhánh Nguyễn Huệ cần bổ sung 1 Nhân viên từ ngày 28/4/2026.",
+      "recipientType": "hr_admin",
+      "recipientBranchId": null,
+      "relatedModule": "transfers",
+      "relatedId": "ec1cfa5c-5659-4db1-9607-6ffcaa88f4d8",
+      "isRead": false,
+      "createdAt": "2026-04-27T07:03:19.276Z"
+    },
+    {
+      "id": "FZhOdSAcfEQ",
+      "type": "transfer_dispatched",
+      "title": "HR yêu cầu hỗ trợ nhân sự",
+      "message": "HR đề nghị chi nhánh bạn cho mượn Phụ bếp sang Nguyễn Huệ. Ghi chú: Chi nhanh nay co nhan su phu hop",
+      "recipientType": "specific_branch",
+      "recipientBranchId": "branch-04",
+      "relatedModule": "transfers",
+      "relatedId": "Irf0rfZnVC8",
+      "isRead": false,
+      "createdAt": "2026-04-27T07:08:39.338Z"
+    },
+    {
+      "id": "a_RviHW0l9Q",
+      "type": "transfer_dispatched",
+      "title": "HR yêu cầu hỗ trợ nhân sự",
+      "message": "HR đề nghị chi nhánh bạn cho mượn Nhân viên sang Nguyễn Huệ. Ghi chú: Hai Ba Trung help us please",
+      "recipientType": "specific_branch",
+      "recipientBranchId": "branch-03",
+      "relatedModule": "transfers",
+      "relatedId": "XhquhXYU8ro",
+      "isRead": false,
+      "createdAt": "2026-04-27T07:14:55.763Z"
+    },
+    {
+      "id": "5wFnI06goGo",
+      "type": "transfer_requested",
+      "title": "Đề xuất cho mượn nhân sự mới",
+      "message": "Chi nhánh Nguyễn Huệ cần bổ sung 1 Nhân viên từ ngày 27/4/2026.",
+      "recipientType": "hr_admin",
+      "recipientBranchId": null,
+      "relatedModule": "transfers",
+      "relatedId": "61275399-2f9b-4494-a5e3-5f5d4142c2ec",
+      "isRead": false,
+      "createdAt": "2026-04-27T07:41:34.897Z"
+    },
+    {
+      "id": "q9p1DW2U5o0",
+      "type": "transfer_requested",
+      "title": "Đề xuất cho mượn nhân sự mới",
+      "message": "Chi nhánh Nguyễn Huệ cần bổ sung 1 Phụ bếp từ ngày 2/2/60701.",
+      "recipientType": "hr_admin",
+      "recipientBranchId": null,
+      "relatedModule": "transfers",
+      "relatedId": "094918fc-b953-4e02-ae44-c070291223da",
+      "isRead": false,
+      "createdAt": "2026-04-27T07:45:07.730Z"
+    },
+    {
+      "id": "qFnAzIY80kU",
+      "type": "transfer_dispatched",
+      "title": "HR yêu cầu hỗ trợ nhân sự",
+      "message": "HR đề nghị chi nhánh bạn cho mượn Phụ bếp sang Nguyễn Huệ. Ghi chú: Xin chi nhanh ho tro 1 phu bep",
+      "recipientType": "specific_branch",
+      "recipientBranchId": "branch-02",
+      "relatedModule": "transfers",
+      "relatedId": "4RTwXerrbbw",
+      "isRead": false,
+      "createdAt": "2026-04-27T07:46:25.177Z"
+    },
+    {
+      "id": "Vf5WDqOFF7o",
+      "type": "transfer_dispatched",
+      "title": "HR yêu cầu hỗ trợ nhân sự",
+      "message": "HR đề nghị chi nhánh bạn cho mượn Nhân viên sang Nguyễn Huệ. Ghi chú: abdbđbadb",
+      "recipientType": "specific_branch",
+      "recipientBranchId": "branch-03",
+      "relatedModule": "transfers",
+      "relatedId": "cJsYVnMRpoE",
+      "isRead": false,
+      "createdAt": "2026-04-27T07:49:54.845Z"
+    },
+    {
+      "id": "H3W2Of_PEYo",
+      "type": "transfer_source_accepted",
+      "title": "Chi nhánh đã đồng ý điều chuyển",
+      "message": "Hai Bà Trưng đồng ý. Nhân viên: testnhanviendieuchuyen. Vui lòng xác nhận chính thức.",
+      "recipientType": "hr_admin",
+      "recipientBranchId": null,
+      "relatedModule": "transfers",
+      "relatedId": "cJsYVnMRpoE",
+      "isRead": false,
+      "createdAt": "2026-04-27T07:50:17.132Z"
+    },
+    {
+      "id": "wM8OBaKUY-A",
+      "type": "transfer_executed",
+      "title": "Xác nhận cho mượn — testnhanviendieuchuyen",
+      "message": "testnhanviendieuchuyen sẽ hỗ trợ Nguyễn Huệ từ ngày 27/4/2026.",
+      "recipientType": "specific_branch",
+      "recipientBranchId": "branch-03",
+      "relatedModule": "transfers",
+      "relatedId": "cJsYVnMRpoE",
+      "isRead": false,
+      "createdAt": "2026-04-27T07:50:32.506Z"
+    },
+    {
+      "id": "IoSHryIdEcg",
+      "type": "transfer_executed",
+      "title": "Tiếp nhận nhân sự — testnhanviendieuchuyen",
+      "message": "testnhanviendieuchuyen (Nhân viên) sẽ hỗ trợ chi nhánh bạn từ ngày 27/4/2026.",
+      "recipientType": "specific_branch",
+      "recipientBranchId": "branch-01",
+      "relatedModule": "transfers",
+      "relatedId": "cJsYVnMRpoE",
+      "isRead": false,
+      "createdAt": "2026-04-27T07:50:32.506Z"
+    },
+    {
+      "id": "wKSe0e6YEq4",
+      "type": "resignation_submitted",
+      "title": "Đơn nghỉ việc mới",
+      "message": "Nguyễn Văn An đã nộp đơn nghỉ việc. Ngày làm cuối: 15/6/2026.",
+      "recipientType": "hr_admin",
+      "recipientBranchId": null,
+      "relatedModule": "offboarding",
+      "relatedId": "6ce4f7d3-4964-41e1-8f50-5b9eb0ab6211",
+      "isRead": false,
+      "createdAt": "2026-04-27T08:03:13.971Z"
+    },
+    {
+      "id": "ySCc90yTRhM",
+      "type": "resignation_submitted",
+      "title": "Đơn nghỉ việc mới",
+      "message": "Trần Thị Bảo đã nộp đơn nghỉ việc. Ngày làm cuối: 27/5/2026.",
+      "recipientType": "hr_admin",
+      "recipientBranchId": null,
+      "relatedModule": "offboarding",
+      "relatedId": "bcfe3591-4833-43ca-8a1e-65d13070ee2c",
+      "isRead": false,
+      "createdAt": "2026-04-27T08:07:35.854Z"
+    },
+    {
+      "id": "stUcCyEgnvs",
+      "type": "resignation_rejected",
+      "title": "Đơn nghỉ việc bị từ chối",
+      "message": "HR đã từ chối đơn nghỉ việc của testnhanviendieuchuyen.",
+      "recipientType": "specific_branch",
+      "recipientBranchId": "branch-03",
+      "relatedModule": "offboarding",
+      "relatedId": "3OqRgNutJyQ",
+      "isRead": false,
+      "createdAt": "2026-04-27T08:16:19.419Z"
+    },
+    {
+      "id": "ke-RoMdDHSQ",
+      "type": "resignation_approved",
+      "title": "Đơn nghỉ việc đã được duyệt",
+      "message": "HR đã duyệt đơn nghỉ việc của Nguyễn Văn An. Ngày làm cuối: 15/6/2026. Vui lòng chuẩn bị bàn giao.",
+      "recipientType": "specific_branch",
+      "recipientBranchId": "branch-01",
+      "relatedModule": "offboarding",
+      "relatedId": "tzpM4E9eyt4",
+      "isRead": false,
+      "createdAt": "2026-04-27T08:16:43.331Z"
+    },
+    {
+      "id": "CJBiVjuyQgg",
+      "type": "resignation_rejected",
+      "title": "Đơn nghỉ việc bị từ chối",
+      "message": "HR đã từ chối đơn nghỉ việc của Trần Thị Bảo.",
+      "recipientType": "specific_branch",
+      "recipientBranchId": "branch-01",
+      "relatedModule": "offboarding",
+      "relatedId": "l3yctzSXehk",
+      "isRead": false,
+      "createdAt": "2026-04-27T08:19:49.867Z"
+    },
+    {
+      "id": "nf-0x_P3vkc",
+      "type": "resignation_submitted",
+      "title": "Đơn nghỉ việc mới",
+      "message": "Trần Thị Bảo đã nộp đơn nghỉ việc. Ngày làm cuối: 27/5/2026.",
+      "recipientType": "hr_admin",
+      "recipientBranchId": null,
+      "relatedModule": "offboarding",
+      "relatedId": "f02772ce-c8dc-4eab-96e3-d671471eafd4",
+      "isRead": false,
+      "createdAt": "2026-04-27T08:23:24.920Z"
+    },
+    {
+      "id": "ajwwQTrNfO8",
+      "type": "resignation_approved",
+      "title": "Đơn nghỉ việc đã được duyệt",
+      "message": "HR đã duyệt đơn nghỉ việc của Trần Thị Bảo. Ngày làm cuối: 27/5/2026. Vui lòng chuẩn bị bàn giao.",
+      "recipientType": "specific_branch",
+      "recipientBranchId": "branch-01",
+      "relatedModule": "offboarding",
+      "relatedId": "k428h_1k1bM",
+      "isRead": false,
+      "createdAt": "2026-04-27T08:29:51.145Z"
+    },
+    {
+      "id": "GmunW-iwFrc",
+      "type": "resignation_submitted",
+      "title": "Đơn nghỉ việc mới",
+      "message": "Phạm Hồng Ngọc đã nộp đơn nghỉ việc. Ngày làm cuối: 1/6/2026.",
+      "recipientType": "hr_admin",
+      "recipientBranchId": null,
+      "relatedModule": "offboarding",
+      "relatedId": "b9aacf92-4c50-4849-9e50-7f568fd54ad6",
+      "isRead": false,
+      "createdAt": "2026-04-27T08:30:44.513Z"
+    },
+    {
+      "id": "W6fGWJjmzmY",
+      "type": "resignation_submitted",
+      "title": "Đơn nghỉ việc mới",
+      "message": "Lưu Hoàng Nam đã nộp đơn nghỉ việc. Ngày làm cuối: 1/6/2026.",
+      "recipientType": "hr_admin",
+      "recipientBranchId": null,
+      "relatedModule": "offboarding",
+      "relatedId": "06191162-2ada-4626-8341-cd58e9227aba",
+      "isRead": false,
+      "createdAt": "2026-04-27T08:40:14.395Z"
+    },
+    {
+      "id": "1AduGRY0OVg",
+      "type": "resignation_approved",
+      "title": "Đơn nghỉ việc đã được duyệt",
+      "message": "HR đã duyệt đơn nghỉ việc của Lưu Hoàng Nam. Ngày làm cuối: 1/6/2026. Vui lòng chuẩn bị bàn giao.",
+      "recipientType": "specific_branch",
+      "recipientBranchId": "branch-01",
+      "relatedModule": "offboarding",
+      "relatedId": "hBQotyfmSwQ",
+      "isRead": false,
+      "createdAt": "2026-04-27T08:41:59.936Z"
+    },
+    {
+      "id": "YqIMciXJO9k",
+      "type": "resignation_rejected",
+      "title": "Đơn nghỉ việc bị từ chối",
+      "message": "HR đã từ chối đơn nghỉ việc của Phạm Hồng Ngọc.",
+      "recipientType": "specific_branch",
+      "recipientBranchId": "branch-01",
+      "relatedModule": "offboarding",
+      "relatedId": "knxk6UrLsr8",
+      "isRead": false,
+      "createdAt": "2026-04-27T08:42:41.763Z"
+    }
+  ],
   "$schema": "./node_modules/json-server/schema.json"
 }

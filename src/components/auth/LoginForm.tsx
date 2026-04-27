@@ -25,22 +25,10 @@ import { useAccountStore } from "@/store/accountStore";
 
 const loginSchema = z.object({
   username: z.string().min(1, "Vui lòng nhập tên đăng nhập"),
-  password: z.string().min(6, "Mật khẩu tối thiểu 6 ký tự"),
+  password: z.string().min(1, "Vui lòng nhập mật khẩu"),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
-
-// ---------------------------------------------------------------------------
-// Mock credentials — map username → password
-// ---------------------------------------------------------------------------
-
-const MOCK_CREDENTIALS: Record<string, string> = {
-  admin: "admin123",
-  "hr.admin": "hr123",
-  "branch.q1": "branch123",
-  ketoan: "acc123",
-  giamdoc: "dir123",
-};
 
 // ---------------------------------------------------------------------------
 // Component
@@ -65,25 +53,19 @@ export function LoginForm() {
     // Simulate network delay
     await new Promise((resolve) => setTimeout(resolve, 600));
 
-    // Check credentials
-    const expectedPassword = MOCK_CREDENTIALS[values.username];
-    if (!expectedPassword || expectedPassword !== values.password) {
+    // L5: Check credentials against MOCK_USERS (password now lives in mockAuth)
+    const user = MOCK_USERS.find(
+      (u) => u.username === values.username && u.password === values.password
+    );
+    if (!user) {
       toast.error("Tên đăng nhập hoặc mật khẩu không đúng");
       setIsSubmitting(false);
       return;
     }
 
-    // Find mock user
-    const user = MOCK_USERS.find((u) => u.username === values.username);
-    if (!user) {
-      toast.error("Tài khoản không tồn tại trong hệ thống");
-      setIsSubmitting(false);
-      return;
-    }
-
     // Save to store + localStorage
-    setMockRole(user.role);
-    useAccountStore.getState().switchRole(user.role);
+    setMockRole(user.role, user.id);
+    useAccountStore.getState().setCurrentUser(user);
 
     // Set cookie for middleware (mock — no real auth)
     document.cookie = `mock_current_role=${user.role}; path=/; max-age=${60 * 60 * 24 * 30}`;
@@ -206,28 +188,25 @@ export function LoginForm() {
             Tài khoản test
           </p>
           <div className="grid grid-cols-2 gap-2 text-xs">
-            {Object.entries(MOCK_CREDENTIALS).map(([username, password]) => {
-              const user = MOCK_USERS.find((u) => u.username === username);
-              return (
-                <button
-                  key={username}
-                  type="button"
-                  onClick={() => {
-                    form.setValue("username", username);
-                    form.setValue("password", password);
-                  }}
-                  className="flex items-center justify-between rounded-lg border border-slate-100 px-3 py-2 text-left transition-colors hover:border-blue-200 hover:bg-blue-50"
-                >
-                  <div>
-                    <p className="font-medium text-slate-700">{username}</p>
-                    <p className="text-slate-400">{password}</p>
-                  </div>
-                  <span className="ml-2 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-500">
-                    {user?.role.replace("_", " ") ?? ""}
-                  </span>
-                </button>
-              );
-            })}
+            {MOCK_USERS.map((user) => (
+              <button
+                key={user.username}
+                type="button"
+                onClick={() => {
+                  form.setValue("username", user.username);
+                  form.setValue("password", user.password);
+                }}
+                className="flex items-center justify-between rounded-lg border border-slate-100 px-3 py-2 text-left transition-colors hover:border-blue-200 hover:bg-blue-50"
+              >
+                <div>
+                  <p className="font-medium text-slate-700">{user.username}</p>
+                  <p className="text-slate-400">{user.password}</p>
+                </div>
+                <span className="ml-2 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-500">
+                  {user.role.replace("_", " ")}
+                </span>
+              </button>
+            ))}
           </div>
         </div>
       </div>

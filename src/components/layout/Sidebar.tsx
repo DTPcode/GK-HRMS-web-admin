@@ -17,8 +17,12 @@ import {
   FileText,
   Clock,
   DollarSign,
+  UserMinus,
+  ArrowRightLeft,
   Shield,
+  ShieldCheck,
   BarChart2,
+  Award,
   ChevronLeft,
   ChevronRight,
   X,
@@ -35,8 +39,12 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   FileText,
   Clock,
   DollarSign,
+  UserMinus,
+  ArrowRightLeft,
   Shield,
+  ShieldCheck,
   BarChart2,
+  Award,
 };
 
 // ---------------------------------------------------------------------------
@@ -94,13 +102,14 @@ export function Sidebar() {
   }, [pathname, closeMobile]);
 
   // Filter NAV_ITEMS theo visibleFor của role hiện tại
-  // SSR: trả mảng rỗng → client mount sẽ render đúng → tránh hydration mismatch
   const visibleNavItems = mounted
     ? NAV_ITEMS.filter((item) => {
+        // visibleFor = null → hiện cho tất cả roles (Dashboard)
         if (!item.visibleFor) return true;
+        // Check role có trong danh sách visibleFor
         return (item.visibleFor as readonly string[]).includes(currentRole);
       })
-    : [];
+    : NAV_ITEMS.filter((item) => !item.visibleFor); // SSR: chỉ render Dashboard
 
   // Sidebar content — dùng chung cho desktop và mobile
   const sidebarContent = (

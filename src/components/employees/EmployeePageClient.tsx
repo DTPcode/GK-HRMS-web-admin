@@ -82,9 +82,9 @@ export function EmployeePageClient() {
     return map;
   }, [contracts]);
 
-  // ── Derived ──
-  const total = totalFiltered();
-  const pageData = paginatedEmployees();
+  // ── Derived (L2: memoized) ──
+  const total = useMemo(() => totalFiltered(), [employees, filter]);
+  const pageData = useMemo(() => paginatedEmployees(), [employees, filter]);
   const totalPages = Math.ceil(total / filter.pageSize);
   const hasActiveFilter = !!(
     filter.search ||

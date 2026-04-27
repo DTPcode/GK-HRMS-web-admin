@@ -5,7 +5,10 @@
 // ============================================================================
 
 import { create } from "zustand";
+import { API_BASE } from "@/lib/constants";
+import { toast } from "sonner";
 import { guardPermission } from "@/lib/guardPermission";
+import { logAudit } from "@/lib/auditHelper";
 import type {
   Contract,
   ContractFormData,
@@ -13,7 +16,7 @@ import type {
   ContractStatus,
 } from "@/types/contract";
 
-const API_BASE = "http://localhost:3001";
+
 
 // ---------------------------------------------------------------------------
 // Filter Interface (local — không export vì chỉ dùng trong store)
@@ -139,7 +142,23 @@ export const useContractStore = create<ContractState>((set, get) => ({
     try {
       const res = await fetch(`${API_BASE}/contracts`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data: Contract[] = await res.json();
+      let data: Contract[] = await res.json();
+
+      // C4: Branch isolation — branch_manager chỉ thấy contract chi nhánh mình
+      const { useAccountStore } = await import("@/store/accountStore");
+      const currentUser = useAccountStore.getState().currentUser;
+      if (currentUser?.role === "branch_manager" && currentUser.branchId) {
+        const { useEmployeeStore } = await import("@/store/employeeStore");
+        const empStore = useEmployeeStore.getState();
+        if (empStore.employees.length === 0) await empStore.fetchEmployees();
+        const branchEmpIds = new Set(
+          useEmployeeStore.getState().employees
+            .filter((e) => e.branchId === currentUser.branchId)
+            .map((e) => e.id)
+        );
+        data = data.filter((c) => branchEmpIds.has(c.employeeId));
+      }
+
       set({ contracts: data });
     } catch (err) {
       set({
@@ -170,7 +189,7 @@ export const useContractStore = create<ContractState>((set, get) => ({
     const now = nowISO();
     const newContract: Contract = {
       ...data,
-      id: `ctr-${Date.now()}`,
+      id: crypto.randomUUID(),
       createdAt: now,
       updatedAt: now,
     };
@@ -185,14 +204,20 @@ export const useContractStore = create<ContractState>((set, get) => ({
         body: JSON.stringify(newContract),
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    } catch (err) {
-      set({
-        contracts: prev,
-        error:
-          err instanceof Error
-            ? err.message
-            : "Không thể tạo hợp đồng mới. Vui lòng thử lại.",
+
+      toast.success("Đã tạo hợp đồng mới");
+
+      // C2: Audit log — fire-and-forget
+      logAudit({
+        module: "contracts",
+        action: "create",
+        targetId: newContract.id,
+        targetName: `HĐ ${newContract.employeeId}`,
       });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Không thể tạo hợp đồng mới. Vui lòng thử lại.";
+      set({ contracts: prev, error: msg });
+      toast.error(msg);
     }
   },
 
@@ -242,19 +267,19 @@ export const useContractStore = create<ContractState>((set, get) => ({
         method: "DELETE",
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      toast.success("Đã xóa hợp đồng");
     } catch (err) {
-      set({
-        contracts: prev,
-        selectedIds: prevIds,
-        error:
-          err instanceof Error
-            ? err.message
-            : "Không thể xóa hợp đồng. Vui lòng thử lại.",
-      });
+      const msg = err instanceof Error ? err.message : "Không thể xóa hợp đồng. Vui lòng thử lại.";
+      set({ contracts: prev, selectedIds: prevIds, error: msg });
+      toast.error(msg);
     }
   },
 
   renewContract: async (id, newEndDate, newSalary) => {
+    // M4: Thêm guardPermission
+    if (!guardPermission("contracts", "create", (msg) => set({ error: msg }))) return;
+
     const oldContract = get().contracts.find((c) => c.id === id);
     if (!oldContract) {
       set({ error: "Không tìm thấy hợp đồng cần gia hạn." });
@@ -274,7 +299,7 @@ export const useContractStore = create<ContractState>((set, get) => ({
       // 2. Tạo HĐ mới kế thừa
       const now = nowISO();
       const newContract: Contract = {
-        id: `ctr-${Date.now()}`,
+        id: crypto.randomUUID(),
         employeeId: oldContract.employeeId,
         type: oldContract.type,
         startDate: oldContract.endDate ?? new Date().toISOString().slice(0, 10),
@@ -303,13 +328,24 @@ export const useContractStore = create<ContractState>((set, get) => ({
           newContract,
         ],
       }));
-    } catch (err) {
-      set({
-        error:
-          err instanceof Error
-            ? err.message
-            : "Không thể gia hạn hợp đồng. Vui lòng thử lại.",
+
+      toast.success("Đã gia hạn hợp đồng");
+
+      // C2: Audit log — fire-and-forget
+      logAudit({
+        module: "contracts",
+        action: "create",
+        targetId: newContract.id,
+        targetName: `Gia hạn HĐ ${oldContract.id}`,
+        changes: {
+          baseSalary: { before: oldContract.baseSalary, after: newSalary },
+          endDate: { before: oldContract.endDate, after: newEndDate },
+        },
       });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Không thể gia hạn hợp đồng. Vui lòng thử lại.";
+      set({ error: msg });
+      toast.error(msg);
     } finally {
       set({ loading: false });
     }

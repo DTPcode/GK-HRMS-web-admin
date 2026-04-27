@@ -124,6 +124,9 @@ export const payrollRecordSchema = z.object({
   /** Ghi chú: điều chỉnh lương, lý do thưởng/phạt... */
   note: z.string().optional(),
 
+  /** Cảnh báo khi tính lương — VD: chưa khai báo BH, thiếu chấm công... */
+  warnings: z.array(z.string()).optional(),
+
   /** ISO 8601 datetime — do server tự sinh */
   createdAt: z.string().datetime({ message: "createdAt phải là ISO datetime" }),
 

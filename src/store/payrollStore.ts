@@ -6,18 +6,18 @@
 // ============================================================================
 
 import { create } from "zustand";
+import { API_BASE, ALLOWANCE_SPLIT, PAYROLL_CONFIG } from "@/lib/constants";
+import { toast } from "sonner";
 import { guardPermission } from "@/lib/guardPermission";
+import { logAudit } from "@/lib/auditHelper";
 import type {
   PayrollRecord,
   PayrollStatus,
   PayrollSummary,
   PaymentData,
 } from "@/types/payroll";
-import { useEmployeeStore } from "@/store/employeeStore";
-import { useContractStore } from "@/store/contractStore";
-import { useAttendanceStore } from "@/store/attendanceStore";
 
-const API_BASE = "http://localhost:3001";
+
 
 // ---------------------------------------------------------------------------
 // Payroll Calculation Constants — theo luật Lao động VN
@@ -29,10 +29,6 @@ const BHXH_RATE = 0.08;
 const BHYT_RATE = 0.015;
 /** Tỷ lệ đóng BHTN người lao động (1%) */
 const BHTN_RATE = 0.01;
-/** Hệ số lương OT ngày thường (150%) */
-const OT_MULTIPLIER = 1.5;
-/** Số giờ chuẩn 1 ngày công */
-const STANDARD_HOURS_PER_DAY = 8;
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -176,6 +172,7 @@ export const usePayrollStore = create<PayrollState>((set, get) => ({
       const { useAccountStore } = await import("@/store/accountStore");
       const { currentUser } = useAccountStore.getState();
       if (currentUser.role === "branch_manager" && currentUser.branchId) {
+        const { useEmployeeStore } = await import("@/store/employeeStore");
         const employees = useEmployeeStore.getState().employees;
         const branchEmployeeIds = new Set(
           employees
@@ -234,6 +231,10 @@ export const usePayrollStore = create<PayrollState>((set, get) => ({
       const now = nowISO();
 
       // ── Cross-store: lấy data từ employee, contract, attendance ──
+      const { useEmployeeStore } = await import("@/store/employeeStore");
+      const { useContractStore } = await import("@/store/contractStore");
+      const { useAttendanceStore } = await import("@/store/attendanceStore");
+
       const activeEmployees = useEmployeeStore
         .getState()
         .employees.filter((e) => e.status === "active");
@@ -295,53 +296,88 @@ export const usePayrollStore = create<PayrollState>((set, get) => ({
         }
 
         // 3. Tính lương theo ngày công thực tế
-        const dailyRate = baseSalary / standardWorkDays;
+        const dailyRate = standardWorkDays > 0
+          ? baseSalary / standardWorkDays
+          : 0;
         const proportionalSalary = Math.round(dailyRate * actualWorkDays);
 
-        // 4. Phụ cấp — chia nhỏ (ước lượng từ tổng phụ cấp HĐ)
+        // 4. Phụ cấp — chia nhỏ (L3: dùng ALLOWANCE_SPLIT từ constants)
         const allowances: Record<string, number> = {};
         if (contractAllowances > 0) {
-          // Tách phụ cấp thành các khoản phổ biến F&B
-          allowances["com"] = Math.round(contractAllowances * 0.4);       // 40% cơm
-          allowances["xe"] = Math.round(contractAllowances * 0.3);        // 30% xăng xe
-          allowances["dien_thoai"] = contractAllowances - allowances["com"] - allowances["xe"]; // còn lại
+          let remaining = contractAllowances;
+          const keys = Object.keys(ALLOWANCE_SPLIT) as (keyof typeof ALLOWANCE_SPLIT)[];
+          keys.forEach((key, i) => {
+            if (i === keys.length - 1) {
+              allowances[key] = remaining; // Số còn lại tránh rounding error
+            } else {
+              allowances[key] = Math.round(contractAllowances * ALLOWANCE_SPLIT[key]);
+              remaining -= allowances[key];
+            }
+          });
         }
         const totalAllowances = sumRecord(allowances);
 
-        // 5. Lương OT: hourlyRate × OT_MULTIPLIER × hours
-        const hourlyRate = baseSalary / (standardWorkDays * STANDARD_HOURS_PER_DAY);
+        // 5. Lương OT: hourlyRate × OT × hours (L4: dùng PAYROLL_CONFIG)
+        const hourlyRate = standardWorkDays > 0
+          ? baseSalary / (standardWorkDays * PAYROLL_CONFIG.standardHoursPerDay)
+          : 0;
         const overtimePay = Math.round(
-          hourlyRate * OT_MULTIPLIER * totalOvertimeHours
+          hourlyRate * PAYROLL_CONFIG.otMultiplierWeekday * totalOvertimeHours
         );
 
-        // 6. Phạt đi muộn: 20.000đ / 10 phút muộn (quy tắc nội bộ)
-        const penalty = Math.round(Math.floor(totalLateMinutes / 10) * 20_000);
+        // 6. Phạt đi muộn (L4: dùng PAYROLL_CONFIG)
+        const penalty = Math.round(
+          Math.floor(totalLateMinutes / PAYROLL_CONFIG.latePenaltyIntervalMinutes)
+          * PAYROLL_CONFIG.latePenaltyAmountPerInterval
+        );
 
-        // 7. Khấu trừ bảo hiểm — tính trên lương cơ bản
-        const deductions: Record<string, number> = {
-          BHXH: Math.round(baseSalary * BHXH_RATE),
-          BHYT: Math.round(baseSalary * BHYT_RATE),
-          BHTN: Math.round(baseSalary * BHTN_RATE),
-        };
+        // 7. Khấu trừ bảo hiểm — đọc từ insuranceStore
+        const { useInsuranceStore } = await import("@/store/insuranceStore");
+        const insRecord = useInsuranceStore.getState().insuranceByEmployee(emp.id);
+        let deductions: Record<string, number>;
+        const warnings: string[] = [];
+
+        if (insRecord) {
+          deductions = {
+            BHXH: Math.round(insRecord.insuredSalary * insRecord.bhxhRate),
+            BHYT: Math.round(insRecord.insuredSalary * insRecord.bhytRate),
+            BHTN: Math.round(insRecord.insuredSalary * insRecord.bhtnRate),
+          };
+        } else {
+          deductions = { BHXH: 0, BHYT: 0, BHTN: 0 };
+          warnings.push("Chưa khai báo bảo hiểm — khấu trừ BH = 0");
+        }
         const totalDeductions = sumRecord(deductions);
 
-        // 8. Gross = proportionalSalary + allowances + OT - penalty
-        const bonus = 0; // chưa có data → HR điều chỉnh sau
-        const grossSalary =
-          proportionalSalary + totalAllowances + bonus + overtimePay - penalty;
+        // 8. Thưởng/Phạt từ module Khen thưởng & Kỷ luật — linked vào tháng này
+        const { useRewardStore } = await import("@/store/rewardStore");
+        const linkedData = useRewardStore.getState().pendingPayrollLinks(month);
+        const empRewardTotal = linkedData.rewards
+          .filter((r) => r.employeeId === emp.id)
+          .reduce((sum, r) => sum + r.amount, 0);
+        const empDisciplinePenalty = linkedData.disciplines
+          .filter((d) => d.employeeId === emp.id)
+          .reduce((sum, d) => sum + d.penaltyAmount, 0);
 
-        // 9. Net = Gross - Deductions
+        const bonus = empRewardTotal;
+        const totalPenalty = penalty + empDisciplinePenalty;
+
+        // 9. Gross = proportionalSalary + allowances + bonus + OT - penalty
+        const grossSalary =
+          proportionalSalary + totalAllowances + bonus + overtimePay - totalPenalty;
+
+        // 10. Net = Gross - Deductions
         const netSalary = Math.max(0, grossSalary - totalDeductions);
 
         const record: PayrollRecord = {
-          id: `pay-${Date.now()}-${emp.id}`,
+          id: crypto.randomUUID(),
           employeeId: emp.id,
           month,
           baseSalary,
           allowances,
           deductions,
           bonus,
-          penalty,
+          penalty: totalPenalty,
           totalWorkDays: standardWorkDays,
           actualWorkDays,
           overtimeHours: totalOvertimeHours,
@@ -352,6 +388,7 @@ export const usePayrollStore = create<PayrollState>((set, get) => ({
           approvedBy: null,
           paidAt: null,
           note: `Tự động tính lương tháng ${month}`,
+          warnings: warnings.length > 0 ? warnings : undefined,
           createdAt: now,
           updatedAt: now,
         };
@@ -359,34 +396,49 @@ export const usePayrollStore = create<PayrollState>((set, get) => ({
         newRecords.push(record);
       }
 
-      // ── POST lên json-server (tuần tự để tránh race condition) ──
-      for (const record of newRecords) {
-        const res = await fetch(`${API_BASE}/payroll`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(record),
-        });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      }
+      // ── POST lên json-server (M6: parallel thay vì sequential) ──
+      await Promise.all(
+        newRecords.map((record) =>
+          fetch(`${API_BASE}/payroll`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(record),
+          }).then((res) => {
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          })
+        )
+      );
 
       // ── Cập nhật state ──
       set((state) => ({
         records: [...state.records, ...newRecords],
       }));
+
+      toast.success(`Đã tạo bảng lương tháng ${month}`);
     } catch (err) {
-      set({
-        error:
-          err instanceof Error
-            ? err.message
-            : "Không thể tạo bảng lương. Vui lòng thử lại.",
-      });
+      const msg = err instanceof Error ? err.message : "Không thể tạo bảng lương. Vui lòng thử lại.";
+      set({ error: msg });
+      toast.error(msg);
     } finally {
       set({ loading: false });
     }
   },
 
   updatePayroll: async (id, data) => {
+    if (!guardPermission("payroll", "update", (msg) => set({ error: msg }))) return;
+
     const prev = get().records;
+    const record = prev.find((r) => r.id === id);
+
+    // Lock check: kỳ lương đã khóa → không cho sửa
+    if (record) {
+      const { useSupplementStore } = await import("@/store/supplementStore");
+      if (useSupplementStore.getState().isLocked("payroll_period", record.month)) {
+        set({ error: `Kỳ lương tháng ${record.month} đã bị khóa. Không thể chỉnh sửa.` });
+        return;
+      }
+    }
+
     const patchData = { ...data, updatedAt: nowISO() };
 
     set({
@@ -493,11 +545,16 @@ export const usePayrollStore = create<PayrollState>((set, get) => ({
 
     const prev = get().records;
     const now = nowISO();
+    const record = prev.find((r) => r.id === id);
+
+    // M3: Lấy currentUser để set approvedBy
+    const { useAccountStore } = await import("@/store/accountStore");
+    const currentUser = useAccountStore.getState().currentUser;
 
     set({
       records: prev.map((r) =>
         r.id === id
-          ? { ...r, status: "approved" as PayrollStatus, updatedAt: now }
+          ? { ...r, status: "approved" as PayrollStatus, approvedBy: currentUser?.id ?? "unknown", updatedAt: now }
           : r
       ),
       error: null,
@@ -507,17 +564,36 @@ export const usePayrollStore = create<PayrollState>((set, get) => ({
       const res = await fetch(`${API_BASE}/payroll/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: "approved", updatedAt: now }),
+        body: JSON.stringify({ status: "approved", approvedBy: currentUser?.id ?? "unknown", updatedAt: now }),
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    } catch (err) {
-      set({
-        records: prev,
-        error:
-          err instanceof Error
-            ? err.message
-            : "Không thể duyệt bảng lương. Vui lòng thử lại.",
+
+      toast.success("Đã duyệt bảng lương");
+
+      // Audit log — fire-and-forget
+      logAudit({
+        module: "payroll",
+        action: "approve",
+        targetId: id,
+        targetName: `Lương ${record?.month ?? ""} - ${record?.employeeId ?? ""}`,
       });
+
+      // Auto-lock kỳ lương sau khi duyệt
+      if (record) {
+        const { useSupplementStore } = await import("@/store/supplementStore");
+        const supplementState = useSupplementStore.getState();
+        if (!supplementState.isLocked("payroll_period", record.month)) {
+          supplementState.lockPeriod(
+            "payroll_period",
+            record.month,
+            "Tự động khóa sau khi duyệt bảng lương"
+          );
+        }
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Không thể duyệt bảng lương. Vui lòng thử lại.";
+      set({ records: prev, error: msg });
+      toast.error(msg);
     }
   },
 
@@ -548,6 +624,28 @@ export const usePayrollStore = create<PayrollState>((set, get) => ({
         body: JSON.stringify(patchData),
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      // Audit log — fire-and-forget
+      import("@/store/accountStore").then(({ useAccountStore }) => {
+        const { currentUser } = useAccountStore.getState();
+        import("@/store/supplementStore").then(({ useSupplementStore }) => {
+          const record = prev.find((r) => r.id === id);
+          useSupplementStore.getState().logAction({
+            userId: currentUser.id,
+            userName: currentUser.username,
+            action: "update",
+            module: "payroll",
+            targetId: id,
+            targetName: `Chi lương ${record?.month ?? ""} - ${record?.employeeId ?? ""}`,
+            changes: {
+              status: { before: record?.status ?? "approved", after: "paid" },
+              paidAt: { before: null, after: patchData.paidAt },
+              paymentMethod: { before: null, after: paymentData?.paymentMethod ?? "bank_transfer" },
+            },
+            ipAddress: "mock-ip",
+          });
+        });
+      });
     } catch (err) {
       set({
         records: prev,
@@ -624,9 +722,11 @@ export const usePayrollStore = create<PayrollState>((set, get) => ({
       status: nextStatus,
       updatedAt: now,
     };
-    // Nếu chuyển sang approved → set approvedBy
+    // M2: Nếu chuyển sang approved → set approvedBy từ currentUser
     if (nextStatus === "approved") {
-      patchFields.approvedBy = "admin";
+      const { useAccountStore } = await import("@/store/accountStore");
+      const currentUser = useAccountStore.getState().currentUser;
+      patchFields.approvedBy = currentUser?.id ?? "unknown";
     }
     // Nếu chuyển sang paid → set paidAt
     if (nextStatus === "paid") {

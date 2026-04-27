@@ -297,3 +297,137 @@ export const LEAVE_TYPE_CONFIG: Record<
     description: "Nghỉ không hưởng lương theo thỏa thuận",
   },
 };
+
+// ---------------------------------------------------------------------------
+// ShiftAssignment Schema
+// ---------------------------------------------------------------------------
+
+/** Ca làm việc cho phân ca — bao gồm 'off' (nghỉ) */
+export const shiftAssignmentTypeEnum = z.enum([
+  "morning",
+  "afternoon",
+  "split",
+  "off",
+]);
+export type ShiftAssignmentType = z.infer<typeof shiftAssignmentTypeEnum>;
+
+/**
+ * Phân ca làm việc cho 1 NV trong 1 ngày.
+ * Map 1:1 với document /shift-assignments trong db.json.
+ * 1 NV chỉ có 1 assignment / ngày.
+ */
+export const shiftAssignmentSchema = z.object({
+  id: z
+    .string({ error: "ID phân ca là bắt buộc" })
+    .min(1, "ID phân ca là bắt buộc"),
+
+  /** FK tới /employees */
+  employeeId: z
+    .string({ error: "Vui lòng chọn nhân viên" })
+    .min(1, "Vui lòng chọn nhân viên"),
+
+  /** FK tới chi nhánh */
+  branchId: z.string().min(1, "Chi nhánh là bắt buộc"),
+
+  /** Ngày phân ca — ISO date "YYYY-MM-DD" */
+  date: z
+    .string({ error: "Vui lòng chọn ngày" })
+    .min(1, "Vui lòng chọn ngày"),
+
+  /** Loại ca */
+  shiftType: shiftAssignmentTypeEnum,
+
+  /** Người phân ca */
+  assignedBy: z.string().min(1, "Người phân ca là bắt buộc"),
+
+  /** Ghi chú — optional */
+  note: z.string().optional(),
+
+  /** ISO 8601 datetime */
+  createdAt: z.string().datetime({ message: "createdAt phải là ISO datetime" }),
+  updatedAt: z.string().datetime({ message: "updatedAt phải là ISO datetime" }),
+});
+
+/**
+ * Schema dùng cho form phân ca.
+ * Bỏ id, assignedBy, branchId, timestamps vì tự sinh.
+ */
+export const shiftAssignmentFormSchema = shiftAssignmentSchema.omit({
+  id: true,
+  assignedBy: true,
+  branchId: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// ---------------------------------------------------------------------------
+// Derived Types — ShiftAssignment
+// ---------------------------------------------------------------------------
+
+/** Entity phân ca đầy đủ */
+export type ShiftAssignment = z.infer<typeof shiftAssignmentSchema>;
+
+/** Payload form phân ca */
+export type ShiftAssignmentFormData = z.infer<typeof shiftAssignmentFormSchema>;
+
+// ---------------------------------------------------------------------------
+// Shift Assignment Config
+// ---------------------------------------------------------------------------
+
+export const SHIFT_ASSIGNMENT_CONFIG: Record<
+  ShiftAssignmentType,
+  { label_vi: string; shortLabel: string; time: string; color: string; bgColor: string }
+> = {
+  morning:   { label_vi: "Ca sáng",  shortLabel: "S", time: "07:00 - 15:00",                color: "text-blue-700",   bgColor: "bg-blue-100" },
+  afternoon: { label_vi: "Ca chiều", shortLabel: "C", time: "15:00 - 23:00",                color: "text-orange-700", bgColor: "bg-orange-100" },
+  split:     { label_vi: "Ca gãy",   shortLabel: "G", time: "10:00-14:00 & 17:00-22:00",    color: "text-purple-700", bgColor: "bg-purple-100" },
+  off:       { label_vi: "Nghỉ",     shortLabel: "—", time: "",                              color: "text-slate-400",  bgColor: "bg-slate-100" },
+};
+
+// ---------------------------------------------------------------------------
+// Monthly Summary (Tổng hợp bảng công)
+// ---------------------------------------------------------------------------
+
+/** Trạng thái tổng hợp bảng công */
+export const summaryStatusEnum = z.enum(["draft", "confirmed", "locked"]);
+export type SummaryStatus = z.infer<typeof summaryStatusEnum>;
+
+/**
+ * Tổng hợp bảng công 1 NV trong 1 tháng.
+ * Map 1:1 với document /monthly-summaries trong db.json.
+ */
+export interface MonthlySummaryRecord {
+  id: string;
+  employeeId: string;
+  employeeName: string;
+  month: string;
+  totalWorkDays: number;
+  totalLateDays: number;
+  totalLateMinutes: number;
+  totalAbsentDays: number;
+  totalLeaveDays: number;
+  totalOvertimeHours: number;
+  totalHolidayDays: number;
+  standardWorkDays: number;
+  status: SummaryStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** Extended row dùng cho bảng hiển thị */
+export interface MonthlySummaryRow extends MonthlySummaryRecord {
+  department: string;
+  branchName: string;
+}
+
+// ---------------------------------------------------------------------------
+// Vietnam Holidays 2026
+// ---------------------------------------------------------------------------
+
+export const HOLIDAYS_2026 = [
+  "2026-01-01", // Tết Dương lịch
+  "2026-02-17", "2026-02-18", "2026-02-19", "2026-02-20", "2026-02-21", // Tết Nguyên Đán
+  "2026-04-30", // Giải phóng miền Nam
+  "2026-05-01", // Quốc tế Lao động
+  "2026-09-02", // Quốc khánh
+];
